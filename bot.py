@@ -5,7 +5,7 @@ from config import TOKEN, PREFIX
 import datetime
 
 COGS = [
-
+    "cogs.chat"
 ]
 
 class Bot(commands.AutoShardedBot):

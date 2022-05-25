@@ -7,7 +7,7 @@ class Chat(commands.Cog):
         self.bot = bot
         self.queue = []
 
-    @commands.group(name='chat', aliases=["wannachat"], invoke_withou_command=True)
+    @commands.group(name='chat', aliases=["wannachat"], invoke_without_command=True)
     async def chat(self, ctx):
         """SEARCH FOR CHATPARTNERS OR ADD YOU TO THE QUEUE"""
         if len(self.queue) == 0:
