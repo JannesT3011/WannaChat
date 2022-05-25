@@ -5,7 +5,8 @@ from config import TOKEN, PREFIX
 import datetime
 
 COGS = [
-    "cogs.chat"
+    "cogs.chat",
+    "cogs.help"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -29,6 +30,8 @@ class Bot(commands.AutoShardedBot):
         self.launch = __import__("datetime").datetime.utcnow()
         self.version = "0.0.1"
         self.creator = "Bambus#8446"
+
+        self.remove_command("help")
 
         for ext in COGS:
             try:
