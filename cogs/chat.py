@@ -27,7 +27,7 @@ class Chat(commands.Cog):
         self.queue.remove(user.id)
         self.queue.remove(ctx.author.id)
 
-        return await ctx.author.send(embed=discord.Embed(title="I find someone to chat with:", description=f"Add: `{user.name}#{user.discriminator}`").set_thumbnail(url=user.avatar_url))
+        return await ctx.author.send(embed=discord.Embed(title="Wanna chat with:", description=f"Add: `{user.name}#{user.discriminator}`").set_thumbnail(url=user.avatar_url))
 
     @chat.command(name="remove")
     async def chat_remove(self, ctx):
