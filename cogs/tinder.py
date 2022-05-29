@@ -12,8 +12,9 @@ class Tinder(commands.Cog):
     async def add_to_likeduser(self, authorid, userid):
         """ADD USER TO LIKEDUSER DB""" 
         data = await self.bot.db.find_one({"_id": str(authorid)})
-        if not str(userid) in data["liked_by"]:
+        if not str(userid) in data["liked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
+        #print(f"Added {userid} to {authorid}")
 
 
     async def add_to_likedby(self, likedbyid, userid):
@@ -37,7 +38,7 @@ class Tinder(commands.Cog):
         likedby_users = user_data["liked_by"]
         queue = [user for user in _queue if user not in liked_users]
         queue = [user for user in queue if user not in self.already_swiped]
-        
+
         if str(author.id) in queue:
             queue.remove(str(author.id))
         if len(queue) == 0:
@@ -96,10 +97,8 @@ class Tinder(commands.Cog):
         """CHECK IF MATCH"""
         partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
         if str(authorid) in partner_data["liked_users"]:
-            print(True)
             return True
-        print(False)
-        await self.bot.get_user()
+
         return False
 
 
@@ -113,7 +112,7 @@ class Tinder(commands.Cog):
 
         async def like_button_interaction(interaction):
             if await self.is_match(str(ctx.author.id), self.chat_partner_id):
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90))
+                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90))
                 try:
                     await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90))
                 except:
