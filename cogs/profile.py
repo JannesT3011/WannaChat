@@ -21,11 +21,10 @@ class Profile(commands.Cog):
         if not data["aboutme"] == "":
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
-        #print(ctx.author.avatar_url)
         embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX}profile <category>")
         return await ctx.author.send(embed=embed)
     
-    @profile.command(name="age") # TODO check if user logins
+    @profile.command(name="age")
     async def profile_age(self, ctx, age:str):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
@@ -33,7 +32,7 @@ class Profile(commands.Cog):
             return await ctx.author.send("Please login first!", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}"))
     
-    @profile.command(name="language")
+    @profile.command(name="language") # TODO check if valid language
     async def profile_language(self, ctx, language):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"language": language}})
@@ -52,16 +51,34 @@ class Profile(commands.Cog):
         return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`"))
     
     @profile.command(name="interests", aliases=["interest"]) # TODO remove interests
-    async def profile_interest(self, ctx, *, interests):
+    async def profile_interest(self, ctx, subcommand, *, interests):
         try:
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send("Please login first!", delete_after=4)
-        if len(data["interests"]) > 5:
-            return await ctx.author.send("You can hav max. 5 interests!")
 
-        await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"interests": interests}})
-        return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interests}"))
+        if subcommand == "add":
+            interest = interests.split(" ")
+            if len(interest) > 1:
+                return await ctx.send("Please use only one word, as interest tag!", delete_after=5)
+            
+            interest = interest[0]
+            if len(data["interests"]) > 5:
+                return await ctx.author.send("You can have max. 5 interests!")
+
+            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"interests": interest}})
+            return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interest}"))
+
+        if subcommand == "delete" or subcommand == "remove":
+            if interests not in data["interests"]:
+                return await ctx.send("Cant find that!", delete_after=5)
+            
+            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"interests": interests}})
+
+            return await ctx.send(f"{interests} successfully removed!")
+        
+        else:
+            return await ctx.send("Invalid argument, please use: `add`or `remove`")
     
     @profile.command(name="gender")
     async def profile_gender(self, ctx, gender):

@@ -6,7 +6,6 @@ from database.database import DbClient, Database
 import datetime
 
 COGS = [
-    "cogs.chat",
     "cogs.help",
     "cogs.profile",
     "cogs.login",
