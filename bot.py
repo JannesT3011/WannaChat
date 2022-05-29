@@ -35,8 +35,17 @@ class Bot(commands.AutoShardedBot):
         self.creator = "Bambus#8446"
         self.db = DbClient().collection
         self.queuedb = DbClient().queuecollection
+        self.blacklist = self.load_blacklist()
         
         self.remove_command("help")
+
+    def load_blacklist(self) -> list:
+        my_file = open("blacklist.txt", "r")
+        content = my_file.read()
+        blacklist = content.split("\n")
+        my_file.close()
+
+        return blacklist
 
     async def load_cogs(self):
         for ext in COGS:
