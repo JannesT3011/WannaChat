@@ -21,8 +21,8 @@ class Login(commands.Cog):
             await Database().delete_db(str(ctx.author.id))
         except:
             return await ctx.send("Already logoff!", delete_after=4)
-        await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(ctx.author.id)}})
+        await self.bot.queuedb.update_many({"_id": "queue"}, {"$pull": {"queue": str(ctx.author.id)}})
         return await ctx.author.send("Logoff successful!")
 
-def setup(bot):
-    bot.add_cog(Login(bot))
+async def setup(bot):
+    await bot.add_cog(Login(bot))

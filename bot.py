@@ -2,11 +2,15 @@ import discord
 from discord.ext import commands
 from discord import utils
 from config import TOKEN, PREFIX
+from database.database import DbClient, Database
 import datetime
 
 COGS = [
     "cogs.chat",
-    "cogs.help"
+    "cogs.help",
+    "cogs.profile",
+    "cogs.login",
+    "cogs.tinder"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -30,17 +34,21 @@ class Bot(commands.AutoShardedBot):
         self.launch = __import__("datetime").datetime.utcnow()
         self.version = "0.0.1"
         self.creator = "Bambus#8446"
-
+        self.db = DbClient().collection
+        self.queuedb = DbClient().queuecollection
+        
         self.remove_command("help")
 
+    async def load_cogs(self):
         for ext in COGS:
             try:
-                self.load_extension(ext)
+                await self.load_extension(ext)
             except Exception as e:
                 print(f"Cant load {ext}")
                 raise e
     
     async def on_ready(self):
+        await self.load_cogs()
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
@@ -69,6 +77,9 @@ class Bot(commands.AutoShardedBot):
         elif isinstance(error, commands.BadArgument):
             owner = self.get_user(self.owner_id)
             return await owner.send(embed=OwnerErrorEmbed(str(error), ctx.guild.name))
+        
+        elif isinstance(error, discord.errors.HTTPException):
+            return await ctx.author.send("I cant notify this user, please send him/her a message first!")
 
 class ErrorEmbed(discord.Embed):
     def __init__(self, description):
@@ -78,7 +89,7 @@ class ErrorEmbed(discord.Embed):
             color=discord.Color.red(),
             timestamp=datetime.datetime.utcnow(),
         )
-        self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
+        #self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
 
 class OwnerErrorEmbed(discord.Embed):
     def __init__(self, description, server):
@@ -88,7 +99,7 @@ class OwnerErrorEmbed(discord.Embed):
             color=discord.Color.red(),
             timestamp=datetime.datetime.utcnow(),
         )
-        self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
+        #self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
 
 bot = Bot()
 

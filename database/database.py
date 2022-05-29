@@ -39,6 +39,7 @@ def db_layout(userid: str):
                     "gender": "-",
                     "liked_users": [],
                     "disliked_users": [],
+                    "liked_by": [],
                     "server_join": str(datetime.utcnow()),
                     }
 

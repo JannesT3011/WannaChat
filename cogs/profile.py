@@ -12,7 +12,6 @@ class Profile(commands.Cog):
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send("Please login first!", delete_after=4)
-        
         embed = discord.Embed(title="Your profile")
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=data["language"], inline=True)
@@ -21,7 +20,8 @@ class Profile(commands.Cog):
             embed.add_field(name="Interests", value=", ".join(data['interests']), inline=False)
         if not data["aboutme"] == "":
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        #print(ctx.author.avatar_url)
         embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX}profile <category>")
         return await ctx.author.send(embed=embed)
     
@@ -73,5 +73,5 @@ class Profile(commands.Cog):
             return await ctx.author.send("Please login first!", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Gender set tot {gender}"))
 
-def setup(bot):
-    bot.add_cog(Profile(bot))
+async def setup(bot):
+    await bot.add_cog(Profile(bot))

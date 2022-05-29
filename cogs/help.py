@@ -12,5 +12,5 @@ class Help(commands.Cog):
         embed.add_field(name="Chat commands", value="`{PREFIX}.chat`: Send you a random user from the queue, you can chat with!")
         return await ctx.reply(embed=embed)
 
-def setup(bot):
-    bot.add_cog(Help(bot))
+async def setup(bot):
+    await bot.add_cog(Help(bot))
