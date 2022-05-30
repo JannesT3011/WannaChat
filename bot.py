@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import utils
-from config import TOKEN, PREFIX
+from config import TOKEN, PREFIX, OWNERID
 from database.database import DbClient, Database
 import datetime
 
@@ -9,7 +9,9 @@ COGS = [
     "cogs.help",
     "cogs.profile",
     "cogs.login",
-    "cogs.tinder"
+    "cogs.tinder",
+
+    "cogs.support.support"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -31,8 +33,9 @@ class Bot(commands.AutoShardedBot):
             intents=intents,
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "0.0.1"
+        self.version = "v0.1"
         self.creator = "Bambus#8446"
+        self.ownerid = OWNERID
         self.db = DbClient().collection
         self.queuedb = DbClient().queuecollection
         self.blacklist = self.load_blacklist()
@@ -60,11 +63,11 @@ class Bot(commands.AutoShardedBot):
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
-    #async def on_message(self, message):
-    #    """IGNORE PRIVATE MESSAGE"""
-    #    if not message.guild:
-    #        return
-    #    await self.process_commands(message)
+    async def on_message(self, message):
+        """IGNORE BOT MESSAGES"""
+        if message.author.bot:
+            return
+        await self.process_commands(message)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):

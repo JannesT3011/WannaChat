@@ -12,7 +12,7 @@ class Profile(commands.Cog):
         try:
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         embed = discord.Embed(title="Your profile")
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=data["language"], inline=True)
@@ -32,7 +32,7 @@ class Profile(commands.Cog):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}"))
     
     @profile.command(name="language")
@@ -42,7 +42,7 @@ class Profile(commands.Cog):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"language": language}})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Language set to {language}"))
     
     @profile.command(name="aboutme")
@@ -54,7 +54,7 @@ class Profile(commands.Cog):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"aboutme": aboutme}})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`"))
     
     @profile.command(name="interests", aliases=["interest"])
@@ -64,7 +64,7 @@ class Profile(commands.Cog):
         try:
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
 
         if subcommand == "add":
             interest = interests.split(" ")
@@ -98,7 +98,7 @@ class Profile(commands.Cog):
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"gender": gender}})
         except:
-            return await ctx.author.send("Please login first!", delete_after=4)
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Gender set tot {gender}"))
 
 async def setup(bot):

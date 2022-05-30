@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 from discord.ui import Button, View
+from config import PREFIX
 
 class Tinder(commands.Cog):
     def __init__(self, bot):
@@ -31,7 +32,7 @@ class Tinder(commands.Cog):
         try:
             user_data = await self.bot.db.find_one({"_id": str(author.id)})
         except:
-            return await author.send("Please login first!")
+            return await author.send(f"Please use `{PREFIX}login` first")
 
         _queue = data["queue"]
         liked_users = user_data["liked_users"]
@@ -112,7 +113,7 @@ class Tinder(commands.Cog):
 
         async def like_button_interaction(interaction):
             if await self.is_match(str(ctx.author.id), self.chat_partner_id):
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90))
+                await ctx.author.send(embed=discord.Embed(title="🔥✨“ Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90))
                 try:
                     await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90))
                 except:
