@@ -43,7 +43,7 @@ class Bot(commands.AutoShardedBot):
         self.remove_command("help")
 
     def load_blacklist(self) -> list:
-        my_file = open("blacklist.txt", "r")
+        my_file = open("data/blacklist.txt", "r")
         content = my_file.read()
         blacklist = content.split("\n")
         my_file.close()
