@@ -11,18 +11,18 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 4. Have fun and start chatting! 🔥
 
 ### Commands
-wc.login: Create an account
-wc.logout: Delete your account
-wc.profile: View your profile
-wc.profile age : Set your age
-wc.profile language add <language>: Add language
-wc.profile language remove <language>: Remove language
-wc.profile gender : Set your gender
-wc.profile interests add <interest>: Add interest
-wc.profile interests remove <interest>: Remove interest
-wc.profile aboutme <aboutme_text>: Set your AboutMe text
-wc.bug : Report a bug
-wc.suggestions : Submit new feature suggestion
+- wc.login: Create an account
+- wc.logout: Delete your account
+- wc.profile: View your profile
+- wc.profile age : Set your age
+- wc.profile language add <language>: Add language
+- wc.profile language remove <language>: Remove language
+- wc.profile gender : Set your gender
+- wc.profile interests add <interest>: Add interest
+- wc.profile interests remove <interest>: Remove interest
+- wc.profile aboutme <aboutme_text>: Set your AboutMe text
+- wc.bug : Report a bug
+- wc.suggestions : Submit new feature suggestion
 
 
 ### TODO
