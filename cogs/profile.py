@@ -125,7 +125,7 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"gender": gender}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        return await ctx.author.send(embed=discord.Embed(title=f"Gender set tot {gender}"))
+        return await ctx.author.send(embed=discord.Embed(title=f"Gender set to {gender}"))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))
