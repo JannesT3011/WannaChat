@@ -81,7 +81,7 @@ class Tinder(commands.Cog):
         except:
             pass
 
-        embed = discord.Embed(title=f"{chat_partner.name}")
+        embed = discord.Embed(title=f"{chat_partner.name} 🧑")
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=chat_partner_data["language"], inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])

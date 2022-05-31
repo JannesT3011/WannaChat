@@ -13,7 +13,7 @@ class Profile(commands.Cog):
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        embed = discord.Embed(title="Your profile")
+        embed = discord.Embed(title="Your profile 🧑")
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(data["language"]), inline=True)
         embed.add_field(name="Gender", value=data["gender"])

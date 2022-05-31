@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import utils
-from config import TOKEN, PREFIX, OWNERID
+from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH
 from database.database import DbClient, Database
 import datetime
 # TODO not responding to server messages
@@ -34,7 +34,7 @@ class Bot(commands.AutoShardedBot):
         self.remove_command("help")
 
     def load_blacklist(self) -> list:
-        my_file = open("data/blacklist.txt", "r")
+        my_file = open(BLACKLIST_FILE_PATH, "r")
         content = my_file.read()
         blacklist = content.split("\n")
         my_file.close()
@@ -59,7 +59,7 @@ class Bot(commands.AutoShardedBot):
         if message.author.bot:
             return
         if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help"):
-            return await message.author.send("Use me here!")
+            return await message.author.send("Use me here, daddy!")
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, error):

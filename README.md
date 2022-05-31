@@ -29,3 +29,5 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 - [ ] valid language
 - [X] bug command (submit bug to owner/support server)
 - [X] suggestion/idea (submit idea to owner/support server)
+- [ ] Premium: See who liked you! (direct match with them!)
+- [ ] Vote benefit > limit swipes if not voted!
