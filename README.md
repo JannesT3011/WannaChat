@@ -3,7 +3,7 @@ Feeling lonely? Start swiping and find your new chat partner!
 
 WannaChat discord bot is a tinder like discord bot. Login, create a profile and start swiping. If you match with someone, you will get the name you can add as your friend! 
 
-<img src="ttps://github.com/JannesT3011/WannaChat/blob/main/logo.png" alt="LOGO"> 
+<img src="https://github.com/JannesT3011/WannaChat/blob/main/logo.png" alt="LOGO"> 
 
 ### How to Start:
 
