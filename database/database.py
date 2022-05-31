@@ -33,7 +33,7 @@ def db_layout(userid: str):
     """DEFAULT DATABASE LAYOUT"""
     default_data = {"_id": userid,
                     "age": "-",
-                    "language": "english",
+                    "language": ["english"],
                     "aboutme": "",
                     "interests": [],
                     "gender": "-",

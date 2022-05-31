@@ -4,7 +4,7 @@ from discord import utils
 from config import TOKEN, PREFIX, OWNERID
 from database.database import DbClient, Database
 import datetime
-
+# TODO not responding to server messages
 COGS = [
     "cogs.help",
     "cogs.profile",
@@ -16,17 +16,7 @@ COGS = [
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
-        intents = discord.Intents(
-            guilds=True,
-            members=True,
-            bans=True,
-            emojis=True,
-            voice_states=True,
-            messages=True,
-            reactions=True,
-            presences=True,
-            invites=True
-        )
+        intents = discord.Intents.all()
         super(Bot, self).__init__(
             command_prefix=PREFIX,
             description="Chat with someone random!",
@@ -40,6 +30,7 @@ class Bot(commands.AutoShardedBot):
         self.queuedb = DbClient().queuecollection
         self.blacklist = self.load_blacklist()
         
+        self.remove_command("bot")
         self.remove_command("help")
 
     def load_blacklist(self) -> list:
@@ -63,17 +54,16 @@ class Bot(commands.AutoShardedBot):
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         """IGNORE BOT MESSAGES"""
         if message.author.bot:
             return
+        if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help"):
+            return await message.author.send("Use me here!")
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
-            return await ctx.send(embed=ErrorEmbed(str(error)))
-
-        elif isinstance(error, commands.BotMissingPermissions):
             return await ctx.send(embed=ErrorEmbed(str(error)))
         
         elif isinstance(error, commands.BotMissingRole):
@@ -86,11 +76,8 @@ class Bot(commands.AutoShardedBot):
             return await ctx.send(embed=ErrorEmbed("This isn't a command! Please use the `help` command"))
         
         elif isinstance(error, commands.BadArgument):
-            owner = self.get_user(self.owner_id)
+            owner = self.get_user(self.ownerid)
             return await owner.send(embed=OwnerErrorEmbed(str(error), ctx.guild.name))
-        
-        elif isinstance(error, discord.errors.HTTPException):
-            return await ctx.author.send("I cant notify this user, please send him/her a message first!")
 
 class ErrorEmbed(discord.Embed):
     def __init__(self, description):

@@ -9,7 +9,7 @@ class Help(commands.Cog):
 
     @commands.command(name='help')
     async def name_command(self, ctx):
-        embed = discord.Embed(title="WannaChat - Help", description="<> are required arguments")
+        embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments")
         embed.add_field(name="How to start:", value=f"1. Login with `{PREFIX}login`\n"
         f"2. Update your profile with `{PREFIX}profile <category>`\n"
         f"3. Start swiping and find your chatpartner with `{PREFIX}swipe`!\n"
@@ -19,9 +19,11 @@ class Help(commands.Cog):
         f"`{PREFIX}logout`: Delete your account\n"
         f"`{PREFIX}profile`: View your profile\n"
         f"`{PREFIX}profile age <age>`: Set your age\n"
-        f"`{PREFIX}profile language <language>`: Set your language\n"
+        f"`{PREFIX}profile language add <language>`: Set your language\n"
+        f"`{PREFIX}profile language remove <language>`: Remove a language\n"
         f"`{PREFIX}profile gender <gender>`: Set your gender\n"
-        f"`{PREFIX}profile interests <interest>`: Set your interest\n"
+        f"`{PREFIX}profile interests add <interest>`: Set your interest\n"
+        f"`{PREFIX}profile interests remove <interest>`: Remove interest\n"
         f"`{PREFIX}profile aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
         embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 

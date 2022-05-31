@@ -15,7 +15,7 @@ class Profile(commands.Cog):
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         embed = discord.Embed(title="Your profile")
         embed.add_field(name="Age", value=data["age"], inline=True)
-        embed.add_field(name="Language", value=data["language"], inline=True)
+        embed.add_field(name="Language", value=", ".join(data["language"]), inline=True)
         embed.add_field(name="Gender", value=data["gender"])
         if not len(data["interests"]) == 0:
             embed.add_field(name="Interests", value=", ".join(data['interests']), inline=False)
@@ -28,7 +28,7 @@ class Profile(commands.Cog):
     @profile.command(name="age")
     async def profile_age(self, ctx, age:str):
         if age in self.bot.blacklist:
-            return await ctx.send("Uh, dont use that word! 😞", delete_after=5)
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
         except:
@@ -36,21 +36,47 @@ class Profile(commands.Cog):
         return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}"))
     
     @profile.command(name="language")
-    async def profile_language(self, ctx, language):
+    async def profile_language(self, ctx, subcommand, *,language):
         if language in self.bot.blacklist:
-            return await ctx.send("Uh, dont use that word! 😞", delete_after=5)
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"language": language}})
+            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        return await ctx.author.send(embed=discord.Embed(title=f"Language set to {language}"))
+
+        if subcommand == "add":
+            language = language.split(" ")
+            if len(language) > 1:
+                return await ctx.author.send("Please use only one word, as language!", delete_after=5)
+            
+            language = language[0]
+            if len(data["language"]) > 5:
+                return await ctx.author.send("You can have max. 5 languages!")
+
+            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"language": language.lower()}})
+            return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}"))
+
+        if subcommand == "delete" or subcommand == "remove":
+            if language not in data["language"]:
+                return await ctx.author.send("Cant find that!", delete_after=5)
+            
+            if len(data["language"]) == 1:
+                return await ctx.author.send("You need at least one language!")
+
+            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"language": language.lower()}})
+
+            return await ctx.author.send(embed=f"{language} successfully removed!")
+        
+        else:
+            return await ctx.author.send("Invalid argument, please use: `add`or `remove`")
+    
     
     @profile.command(name="aboutme")
     async def profile_aboutme(self, ctx, *, aboutme:str):
         if len(aboutme) == 100:
             return await ctx.author.send("Aboutme can only be 100 characters long", delete_after=4)
         if any(word in aboutme for word in self.bot.blacklist):
-            return await ctx.send("Uh, dont use that word! 😞", delete_after=5)
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"aboutme": aboutme}})
         except:
@@ -60,7 +86,7 @@ class Profile(commands.Cog):
     @profile.command(name="interests", aliases=["interest"])
     async def profile_interest(self, ctx, subcommand, *, interests):
         if interests in self.bot.blacklist:
-            return await ctx.send("Uh, dont use that word! 😞", delete_after=5)
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
@@ -69,7 +95,7 @@ class Profile(commands.Cog):
         if subcommand == "add":
             interest = interests.split(" ")
             if len(interest) > 1:
-                return await ctx.send("Please use only one word, as interest tag!", delete_after=5)
+                return await ctx.author.send("Please use only one word, as interest tag!", delete_after=5)
             
             interest = interest[0]
             if len(data["interests"]) > 5:
@@ -80,19 +106,19 @@ class Profile(commands.Cog):
 
         if subcommand == "delete" or subcommand == "remove":
             if interests not in data["interests"]:
-                return await ctx.send("Cant find that!", delete_after=5)
+                return await ctx.author.send("Cant find that!", delete_after=5)
             
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"interests": interests}})
 
-            return await ctx.send(f"{interests} successfully removed!")
+            return await ctx.author.send(f"{interests} successfully removed!")
         
         else:
-            return await ctx.send("Invalid argument, please use: `add`or `remove`")
+            return await ctx.author.send("Invalid argument, please use: `add`or `remove`")
     
     @profile.command(name="gender")
     async def profile_gender(self, ctx, gender):
         if gender in self.bot.blacklist:
-            return await ctx.send("Uh, dont use that word! 😞", delete_after=5)
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         if not gender in ["male", "female", "divers"]:
             return await ctx.author.send("Invalid gender, please use: `male`, `female`, `divers`")
         try:
