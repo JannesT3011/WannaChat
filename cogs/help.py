@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import PREFIX
+from config import PREFIX, EMBED_COLOR
 from discord.ui import Button, View
 
 class Help(commands.Cog):
@@ -9,7 +9,7 @@ class Help(commands.Cog):
 
     @commands.command(name='help')
     async def name_command(self, ctx):
-        embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments")
+        embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments", color=EMBED_COLOR)
         embed.add_field(name="How to start:", value=f"1. Login with `{PREFIX}login`\n"
         f"2. Update your profile with `{PREFIX}profile <category>`\n"
         f"3. Start swiping and find your chatpartner with `{PREFIX}swipe`!\n"

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from database.database import Database
+from config import EMBED_COLOR
 
 class Login(commands.Cog):
     def __init__(self, bot):
@@ -13,7 +14,7 @@ class Login(commands.Cog):
         except:
             return await ctx.author.send("Already login!", delete_after=4)
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(ctx.author.id)}})
-        return await ctx.author.send("Login successful!")
+        return await ctx.author.send(embed=discord.Embed(title="Login successful!", color=EMBED_COLOR))
     
     @commands.command(name="logoff")
     async def logoff(self, ctx):
@@ -22,7 +23,7 @@ class Login(commands.Cog):
         except:
             return await ctx.send("Already logoff!", delete_after=4)
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$pull": {"queue": str(ctx.author.id)}})
-        return await ctx.author.send("Logoff successful!")
+        return await ctx.author.send(embed=discord.Embed(title="Logoff successful!", color=EMBED_COLOR))
 
 async def setup(bot):
     await bot.add_cog(Login(bot))

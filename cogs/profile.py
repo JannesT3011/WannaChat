@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import PREFIX
+from config import PREFIX, EMBED_COLOR
 
 
 class Profile(commands.Cog):
@@ -13,7 +13,7 @@ class Profile(commands.Cog):
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        embed = discord.Embed(title="Your profile 🧑")
+        embed = discord.Embed(title="Your profile 🧑", color=EMBED_COLOR)
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(data["language"]), inline=True)
         embed.add_field(name="Gender", value=data["gender"])
@@ -33,7 +33,7 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}"))
+        return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}",color=EMBED_COLOR))
     
     @profile.command(name="language")
     async def profile_language(self, ctx, subcommand, *,language):
@@ -54,7 +54,7 @@ class Profile(commands.Cog):
                 return await ctx.author.send("You can have max. 5 languages!")
 
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"language": language.lower()}})
-            return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}"))
+            return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR))
 
         if subcommand == "delete" or subcommand == "remove":
             if language not in data["language"]:
@@ -81,7 +81,7 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"aboutme": aboutme}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`"))
+        return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`", color=EMBED_COLOR))
     
     @profile.command(name="interests", aliases=["interest"])
     async def profile_interest(self, ctx, subcommand, *, interests):
@@ -102,7 +102,7 @@ class Profile(commands.Cog):
                 return await ctx.author.send("You can have max. 5 interests!")
 
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"interests": interest}})
-            return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interest}"))
+            return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interest}", color=EMBED_COLOR))
 
         if subcommand == "delete" or subcommand == "remove":
             if interests not in data["interests"]:
@@ -125,7 +125,7 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"gender": gender}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        return await ctx.author.send(embed=discord.Embed(title=f"Gender set to {gender}"))
+        return await ctx.author.send(embed=discord.Embed(title=f"Gender set to {gender}", color=EMBED_COLOR))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))

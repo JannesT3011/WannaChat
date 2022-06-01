@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 from discord.ui import Button, View
-from config import PREFIX
+from config import PREFIX, EMBED_COLOR
 
 class Tinder(commands.Cog):
     def __init__(self, bot):
@@ -81,7 +81,7 @@ class Tinder(commands.Cog):
         except:
             pass
 
-        embed = discord.Embed(title=f"{chat_partner.name} 🧑")
+        embed = discord.Embed(title=f"{chat_partner.name} 🧑", color=EMBED_COLOR)
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=chat_partner_data["language"], inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])
@@ -117,7 +117,7 @@ class Tinder(commands.Cog):
                 try:
                     await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90))
                 except:
-                    await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬"))
+                    await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
             
             await self.add_to_likedby(str(ctx.author.id), self.chat_partner_id)
             await self.add_to_likeduser(str(ctx.author.id), self.chat_partner_id)
