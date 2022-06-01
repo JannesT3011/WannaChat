@@ -26,8 +26,8 @@ class Help(commands.Cog):
         f"`{PREFIX}profile interests remove <interest>`: Remove interest\n"
         f"`{PREFIX}profile aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
-        embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\nOr join the (support server)[ {SUPPORT_SERVER_LINK} ]" 
-        f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestion")
+        embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
+        f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestionn\nOr join the [support server]( {SUPPORT_SERVER_LINK} )\n")
         embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}")
 
         invite_button = Button(label="Add me to your server", url="https://discord.com/oauth2/authorize?client_id=979065679376437308&scope=bot+applications.commands")

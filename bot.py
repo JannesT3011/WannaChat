@@ -5,7 +5,6 @@ from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH
 from database.database import DbClient, Database
 import datetime
 
-
 COGS = [
     "cogs.help",
     "cogs.profile",
