@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import PREFIX, EMBED_COLOR
+from config import PREFIX, EMBED_COLOR, SUPPORT_SERVER_LINK
 from discord.ui import Button, View
 
 class Help(commands.Cog):
@@ -26,7 +26,7 @@ class Help(commands.Cog):
         f"`{PREFIX}profile interests remove <interest>`: Remove interest\n"
         f"`{PREFIX}profile aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
-        embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
+        embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\nOr join the (support server)[ {SUPPORT_SERVER_LINK} ]" 
         f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestion")
         embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}")
 
