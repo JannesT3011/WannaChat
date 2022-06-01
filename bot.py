@@ -4,7 +4,8 @@ from discord import utils
 from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH
 from database.database import DbClient, Database
 import datetime
-# TODO not responding to server messages
+
+
 COGS = [
     "cogs.help",
     "cogs.profile",
@@ -23,7 +24,7 @@ class Bot(commands.AutoShardedBot):
             intents=intents,
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v0.1"
+        self.version = "v0.1.1"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
