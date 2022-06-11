@@ -27,7 +27,6 @@ class Tinder(commands.Cog):
 
     async def load_chatpartner(self, author, msg:any=None) -> str:
         """LOAD A NEW CHATPARTNER"""
-        already_swiped = []
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         
         try:
@@ -38,8 +37,9 @@ class Tinder(commands.Cog):
         _queue = data["queue"]
         liked_users = user_data["liked_users"]
         likedby_users = user_data["liked_by"]
+
         queue = [user for user in _queue if user not in liked_users]
-        queue = [user for user in queue if user not in already_swiped]
+        queue = [user for user in queue if user not in self.already_swiped]
 
         if str(author.id) in queue:
             queue.remove(str(author.id))
@@ -65,24 +65,20 @@ class Tinder(commands.Cog):
                     chat_partner = random.choice(queue)
                 else:
                     chat_partner = random.choice(likedby_users)
-                    if chat_partner in already_swiped:
+                    if chat_partner in self.already_swiped:
                         chat_partner = random.choice(queue)
             else:
                 chat_partner = random.choice(queue)
 
-        already_swiped.append(chat_partner)
+        self.already_swiped.append(chat_partner)
         return chat_partner
 
 
-    async def create_profile_embed(self, chatpartner) -> discord.Embed:
+    async def create_profile_embed(self, chatpartner, chatpartner_id) -> discord.Embed:
         """CREATE THE PROFILE EMBED"""
-        chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner)})
-        try:
-            chat_partner = self.bot.get_user(int(chatpartner))
-        except:
-            pass
+        chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner_id)})
 
-        embed = discord.Embed(title=f"{chat_partner.name} 🧑", color=EMBED_COLOR)
+        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=EMBED_COLOR)
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=chat_partner_data["language"], inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])
@@ -90,7 +86,7 @@ class Tinder(commands.Cog):
             embed.add_field(name="Interests", value=", ".join(chat_partner_data['interests']), inline=False)
         if not chat_partner_data["aboutme"] == "":
             embed.add_field(name="About me", value=chat_partner_data["aboutme"], inline=False)
-        embed.set_thumbnail(url=chat_partner.display_avatar.url)
+        embed.set_thumbnail(url=chatpartner.display_avatar.url)
 
         return embed
 
@@ -107,10 +103,15 @@ class Tinder(commands.Cog):
     @commands.command(name='swipe', aliases=["match"]) # todo when swiping show users that has similar interests
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
-
+        self.already_swiped = []
         self.chat_partner_id = await self.load_chatpartner(ctx.author)
         self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
-        embed = await self.create_profile_embed(int(self.chat_partner_id))
+
+        while self.chat_partner is None:
+            self.chat_partner_id = await self.load_chatpartner(ctx.author)
+            self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+
+        embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
         async def like_button_interaction(interaction):
             if await self.is_match(str(ctx.author.id), self.chat_partner_id):
@@ -125,7 +126,12 @@ class Tinder(commands.Cog):
 
             self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
             self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
-            embed = await self.create_profile_embed(self.chat_partner_id)
+
+            while self.chat_partner is None:
+                self.chat_partner_id = await self.load_chatpartner(ctx.author)
+                self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+
+            embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
             await interaction.response.edit_message(embed=embed) 
 
@@ -134,7 +140,12 @@ class Tinder(commands.Cog):
             try:
                 self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
                 self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
-                embed = await self.create_profile_embed(self.chat_partner_id)
+
+                while self.chat_partner is None:
+                    self.chat_partner_id = await self.load_chatpartner(ctx.author)
+                    self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+
+                embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
                 await interaction.response.edit_message(embed=embed) 
             except TypeError:
