@@ -59,7 +59,10 @@ class Bot(commands.AutoShardedBot):
         if message.author.bot:
             return
         if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help"):
-            return await message.author.send("Use me here, daddy!")
+            try:
+                return await message.author.send("Use me here, daddy!")
+            except:
+                return await message.send("Use me in my DMs, daddy!", delete_after=5)
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, error):

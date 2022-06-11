@@ -27,6 +27,7 @@ class Tinder(commands.Cog):
 
     async def load_chatpartner(self, author, msg:any=None) -> str:
         """LOAD A NEW CHATPARTNER"""
+        already_swiped = []
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         
         try:
@@ -38,7 +39,7 @@ class Tinder(commands.Cog):
         liked_users = user_data["liked_users"]
         likedby_users = user_data["liked_by"]
         queue = [user for user in _queue if user not in liked_users]
-        queue = [user for user in queue if user not in self.already_swiped]
+        queue = [user for user in queue if user not in already_swiped]
 
         if str(author.id) in queue:
             queue.remove(str(author.id))
@@ -64,12 +65,12 @@ class Tinder(commands.Cog):
                     chat_partner = random.choice(queue)
                 else:
                     chat_partner = random.choice(likedby_users)
-                    if chat_partner in self.already_swiped:
+                    if chat_partner in already_swiped:
                         chat_partner = random.choice(queue)
             else:
                 chat_partner = random.choice(queue)
 
-        self.already_swiped.append(chat_partner)
+        already_swiped.append(chat_partner)
         return chat_partner
 
 
