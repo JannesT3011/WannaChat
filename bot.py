@@ -53,7 +53,8 @@ class Bot(commands.AutoShardedBot):
     async def on_ready(self):
         await self.load_cogs()
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
-        print(len(self.guilds))
+        data = {"server_count": len(self.guilds)}
+        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
     async def on_message(self, message: discord.Message):
