@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 from discord import utils
-from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH
+from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN
 from database.database import DbClient, Database
 import datetime
+import requests
 
 COGS = [
     "cogs.help",
@@ -52,6 +53,7 @@ class Bot(commands.AutoShardedBot):
     async def on_ready(self):
         await self.load_cogs()
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
+        print(len(self.guilds))
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
     async def on_message(self, message: discord.Message):
@@ -64,6 +66,14 @@ class Bot(commands.AutoShardedBot):
             except:
                 return await message.send("Use me in my DMs, daddy!", delete_after=5)
         await self.process_commands(message)
+
+    async def on_guild_join(self, guild):
+        data = {"server_count": len(self.guilds)}
+        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+
+    async def on_guild_remove(self, guild):
+        data = {"server_count": len(self.guilds)}
+        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
