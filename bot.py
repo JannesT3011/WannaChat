@@ -12,7 +12,8 @@ COGS = [
     "cogs.login",
     "cogs.tinder",
 
-    "cogs.support.support"
+    "cogs.support.support",
+    "cogs.owner.owner"
 ]
 
 class Bot(commands.AutoShardedBot):
