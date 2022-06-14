@@ -9,9 +9,8 @@ class Profile(commands.Cog):
 
     @commands.group(name='profile', invoke_without_command=True)
     async def profile(self, ctx):
-        try:
-            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
-        except:
+        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         embed = discord.Embed(title="Your profile 🧑", color=EMBED_COLOR)
         embed.add_field(name="Age", value=data["age"], inline=True)
