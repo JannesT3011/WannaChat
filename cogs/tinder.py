@@ -131,9 +131,9 @@ class Tinder(commands.Cog):
                 info_button.callback = info_button_interaction
                 view = View()
                 view.add_item(info_button)
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90), view=view)
+                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`", color=0x67ff90), view=view)
                 try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90), view=view)
+                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`", color=0x67ff90), view=view)
                 except:
                     await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
             
