@@ -131,4 +131,6 @@ dmypy.json
 # CONFIG
 config.py
 
+test.py
 topgg/
+plan.md
