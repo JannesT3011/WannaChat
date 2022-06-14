@@ -8,14 +8,14 @@ class Tinder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.already_swiped = []
-
+        self.match = ""
+        self.match_id = ""
 
     async def add_to_likeduser(self, authorid, userid):
         """ADD USER TO LIKEDUSER DB""" 
         data = await self.bot.db.find_one({"_id": str(authorid)})
         if not str(userid) in data["liked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
-        #print(f"Added {userid} to {authorid}")
 
 
     async def add_to_likedby(self, likedbyid, userid):
@@ -71,6 +71,7 @@ class Tinder(commands.Cog):
                 chat_partner = random.choice(queue)
 
         self.already_swiped.append(chat_partner)
+        
         return chat_partner
 
 
@@ -100,24 +101,39 @@ class Tinder(commands.Cog):
         return False
 
 
-    @commands.command(name='swipe', aliases=["match"]) # todo when swiping show users that has similar interests
+    @commands.command(name='swipe', aliases=["match"])
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
         self.already_swiped = []
+        self.match = ""
+        self.match_id = ""
+        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        if data is None:
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         self.chat_partner_id = await self.load_chatpartner(ctx.author)
-        self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+        self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
         while self.chat_partner is None:
             self.chat_partner_id = await self.load_chatpartner(ctx.author)
-            self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+            self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
         embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
+        async def info_button_interaction(interacion):
+            embed = await self.create_profile_embed(self.match, self.match_id)
+            await interacion.response.send_message(embed=embed)
+
         async def like_button_interaction(interaction):
             if await self.is_match(str(ctx.author.id), self.chat_partner_id):
-                await ctx.author.send(embed=discord.Embed(title="🔥✨“ Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90))
+                self.match = self.chat_partner
+                self.match_id = self.chat_partner_id
+                info_button = Button(label="Info", style=discord.ButtonStyle.grey, emoji="ℹ️")
+                info_button.callback = info_button_interaction
+                view = View()
+                view.add_item(info_button)
+                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {self.chat_partner.name}#{self.chat_partner.discriminator}", color=0x67ff90), view=view)
                 try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90))
+                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with {ctx.author.name}#{ctx.author.discriminator}", color=0x67ff90), view=view)
                 except:
                     await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
             
@@ -125,11 +141,11 @@ class Tinder(commands.Cog):
             await self.add_to_likeduser(str(ctx.author.id), self.chat_partner_id)
 
             self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
-            self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+            self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
             while self.chat_partner is None:
                 self.chat_partner_id = await self.load_chatpartner(ctx.author)
-                self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+                self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
             embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
@@ -139,11 +155,11 @@ class Tinder(commands.Cog):
         async def dislike_button_interaction(interaction):
             try:
                 self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
-                self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+                self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
                 while self.chat_partner is None:
                     self.chat_partner_id = await self.load_chatpartner(ctx.author)
-                    self.chat_partner = self.bot.get_user(int(self.chat_partner_id))
+                    self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
                 embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
@@ -151,16 +167,21 @@ class Tinder(commands.Cog):
             except TypeError:
                 like_button.disabled = True
                 dislike_button.disabled = True
+            
+        async def cancel_button_interaction(interaction):
+            await msg.delete()
 
         like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️") 
         dislike_button = Button(label="Nah", style=discord.ButtonStyle.red, emoji="💤") # TODO error handler -> on_timeout -> delete message
+        cancel_button = Button(label="Cancel", style=discord.ButtonStyle.grey, emoji="❌")
         like_button.callback = like_button_interaction
         dislike_button.callback = dislike_button_interaction
+        cancel_button.callback = cancel_button_interaction
 
         view = View()
         view.add_item(like_button)
         view.add_item(dislike_button)
-
+        view.add_item(cancel_button)
         msg = await ctx.author.send(embed=embed, view=view)
 
 async def setup(bot):
