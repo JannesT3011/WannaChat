@@ -27,9 +27,22 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 - wc.suggestions : Submit new feature suggestion
 
 
-### TODO
+### What data will be collected?
+The bot only collect and store your UserID and your user name to link it to your profile.
+Any other data, liked you age etc. will be provided by yourself.
+
+### Privice policy:
+The data (means: the data you provide by yourself, such as your age) will only be available for you and other users, using this bot! 
+
+
+### TODOs
 - [ ] valid language
 - [X] bug command (submit bug to owner/support server)
 - [X] suggestion/idea (submit idea to owner/support server)
-- [ ] Premium: See who liked you! (direct match with them!)
-- [ ] Vote benefit > limit swipes if not voted!
+- [ ] Premium: See who liked you! (direct match with them!) ()
+- [ ] Vote benefit > limit likes (50) if not voted!
+- [ ] Vote log for server (give server role)
+- [ ] on_timeout
+- [ ] slash commands
+- [X] message not deleting after no more users
+- [ ] top.gg images for README
