@@ -18,7 +18,7 @@ COGS = [
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
-        intents = discord.Intents.all()
+        intents = discord.Intents.default()
         super(Bot, self).__init__(
             command_prefix=PREFIX,
             description="Chat with someone random!",
@@ -55,7 +55,7 @@ class Bot(commands.AutoShardedBot):
         await self.load_cogs()
         await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
         data = {"server_count": len(self.guilds)}
-        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
     async def on_message(self, message: discord.Message):
@@ -71,11 +71,11 @@ class Bot(commands.AutoShardedBot):
 
     async def on_guild_join(self, guild):
         data = {"server_count": len(self.guilds)}
-        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
 
     async def on_guild_remove(self, guild):
         data = {"server_count": len(self.guilds)}
-        requests.post("https://top.gg/api/bots/979065679376437308/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        requests.post("https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
