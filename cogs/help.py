@@ -9,7 +9,7 @@ class Help(commands.Cog):
 
     @commands.command(name='help')
     async def name_command(self, ctx):
-        embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments", color=EMBED_COLOR)
+        embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments", color=EMBED_COLOR, timestamp=ctx.message.created_at)
         embed.add_field(name="How to start:", value=f"1. Login with `{PREFIX}login`\n"
         f"2. Update your profile with `{PREFIX}profile <category>`\n"
         f"3. Start swiping and find your chatpartner with `{PREFIX}swipe`!\n"
@@ -28,7 +28,7 @@ class Help(commands.Cog):
         inline=False)
         embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
         f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestionn\nOr join the [support server]( {SUPPORT_SERVER_LINK} )\n")
-        embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}")
+        embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
 
         invite_button = Button(label="Add me to your server", url="https://discord.com/oauth2/authorize?client_id=979065679376437308&scope=bot+applications.commands&permissions=414464724032")
         view = View()

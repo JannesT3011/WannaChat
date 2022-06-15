@@ -88,11 +88,13 @@ class Bot(commands.AutoShardedBot):
             return await ctx.send(embed=ErrorEmbed(str(error)))
         
         elif isinstance(error, commands.CommandNotFound):
-            return await ctx.send(embed=ErrorEmbed("This isn't a command! Please use the `help` command"))
+            return await ctx.send(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
         
         elif isinstance(error, commands.BadArgument):
             owner = self.get_user(self.ownerid)
             return await owner.send(embed=OwnerErrorEmbed(str(error), ctx.guild.name))
+
+bot = Bot()
 
 class ErrorEmbed(discord.Embed):
     def __init__(self, description):
@@ -102,7 +104,7 @@ class ErrorEmbed(discord.Embed):
             color=discord.Color.red(),
             timestamp=datetime.datetime.utcnow(),
         )
-        #self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
+        self.set_footer(text=f"{bot.version} • made with ❤️ by {bot.creator}", icon_url=bot.user.display_avatar.url)
 
 class OwnerErrorEmbed(discord.Embed):
     def __init__(self, description, server):
@@ -112,8 +114,6 @@ class OwnerErrorEmbed(discord.Embed):
             color=discord.Color.red(),
             timestamp=datetime.datetime.utcnow(),
         )
-        #self.set_footer(text=f'{bot.user.name} made with <3 by Bambus#8446', icon_url=bot.user.avatar_url)
-
-bot = Bot()
+        self.set_footer(text=f"{bot.version} • made with ❤️ by {bot.creator}", icon_url=bot.user.display_avatar.url)
 
 bot.run(TOKEN)
