@@ -31,8 +31,10 @@ class Help(commands.Cog):
         embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
 
         invite_button = Button(label="Add me to your server", url="https://discord.com/oauth2/authorize?client_id=979065679376437308&scope=bot+applications.commands&permissions=414464724032")
+        vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
         view = View()
         view.add_item(invite_button)
+        view.add_item(vote_button)
         
         return await ctx.reply(embed=embed, view=view)
 
