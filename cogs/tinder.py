@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 import random
 from discord.ui import Button, View
-from config import PREFIX, EMBED_COLOR
+from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN
+import topgg
 
 class Tinder(commands.Cog):
     def __init__(self, bot):
@@ -11,14 +12,14 @@ class Tinder(commands.Cog):
         self.match = ""
         self.match_id = ""
 
-    async def add_to_likeduser(self, authorid, userid):
+    async def add_to_likeduser(self, authorid, userid) -> None:
         """ADD USER TO LIKEDUSER DB""" 
         data = await self.bot.db.find_one({"_id": str(authorid)})
         if not str(userid) in data["liked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
 
 
-    async def add_to_likedby(self, likedbyid, userid):
+    async def add_to_likedby(self, likedbyid, userid) -> None:
         """ADD TO LIKEDBY DB"""
         data = await self.bot.db.find_one({"_id": str(userid)})
         if not str(likedbyid) in data["liked_by"]:
@@ -70,7 +71,7 @@ class Tinder(commands.Cog):
             else:
                 chat_partner = random.choice(queue)
 
-        self.already_swiped.append(chat_partner)
+        self.already_swiped.append(chat_partner) # TODO add to monthly swipe file
         
         return chat_partner
 
@@ -99,7 +100,6 @@ class Tinder(commands.Cog):
             return True
 
         return False
-
 
     @commands.command(name='swipe', aliases=["match"])
     async def swipe(self, ctx):
@@ -131,9 +131,9 @@ class Tinder(commands.Cog):
                 info_button.callback = info_button_interaction
                 view = View()
                 view.add_item(info_button)
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`", color=0x67ff90), view=view)
+                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\nAdd this user and start chatting!", color=0x67ff90), view=view)
                 try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`", color=0x67ff90), view=view)
+                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`\nAdd this user and start chatting!", color=0x67ff90), view=view)
                 except:
                     await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
             
