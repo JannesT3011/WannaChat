@@ -16,6 +16,7 @@ class DbClient:
 class Database(DbClient):
     """EXECUTE DATABASE STUFF"""
     async def init_db(self, userid: str):
+        """INSERT DOCUMENT"""
         try:
             await self.collection.insert_one(db_layout(userid))
             return
@@ -23,13 +24,14 @@ class Database(DbClient):
             raise
 
     async def delete_db(self, userid: str):
+        """DELETE DOCUMENT"""
         try:
             await self.collection.delete_one({"_id": userid})
             return
         except:
             raise
 
-def db_layout(userid: str):
+def db_layout(userid: str) -> dict:
     """DEFAULT DATABASE LAYOUT"""
     default_data = {"_id": userid,
                     "age": "-",
