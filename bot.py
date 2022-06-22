@@ -23,6 +23,7 @@ class Bot(commands.AutoShardedBot):
             command_prefix=PREFIX,
             description="Chat with someone random!",
             intents=intents,
+            activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
         self.version = "v1.0"
@@ -53,7 +54,6 @@ class Bot(commands.AutoShardedBot):
     
     async def on_ready(self):
         await self.load_cogs()
-        await self.change_presence(activity=discord.Game(name=f"{PREFIX}help"))
         data = {"server_count": len(self.guilds)}
         requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")

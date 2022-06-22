@@ -21,9 +21,16 @@ class Owner(commands.Cog):
     
     @commands.is_owner()
     @commands.command(name="status")
-    async def status(self, ctx, *, game:str):
+    async def status(self, ctx, type:str, *, game:str):
         """SET THE BOT STATUS"""
-        await self.bot.change_presence(activity=discord.Game(name=game))
+        if type == "game":
+            await self.bot.change_presence(activity=discord.Game(name=game))
+        elif type == "watching":
+            await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=game))
+        elif type == "listening":
+            await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=game))
+        else:
+            return await ctx.author.send("No valid type -> `game, watching, listening`")
 
         return await ctx.author.send(f"Status set to {game}")
     
