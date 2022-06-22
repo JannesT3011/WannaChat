@@ -9,6 +9,7 @@ class Tinder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.already_swiped = []
+        self.topgg = topgg.DBLClient(self.bot, TOPGG_TOKEN)
         self.match = ""
         self.match_id = ""
 
@@ -100,8 +101,14 @@ class Tinder(commands.Cog):
             return True
 
         return False
+    
+    async def check_vote(self, userid:int) -> bool:
+        """CHECK IF USER VOTED"""
+        check = await self.topgg.get_user_vote(userid)
+        await self.topgg.close()
+        return check
 
-    @commands.command(name='swipe', aliases=["match"])
+    @commands.command(name='swipe', aliases=["match", "s"])
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
         self.already_swiped = []
@@ -131,9 +138,9 @@ class Tinder(commands.Cog):
                 info_button.callback = info_button_interaction
                 view = View()
                 view.add_item(info_button)
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\nAdd this user and start chatting!", color=0x67ff90), view=view)
+                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
                 try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`\nAdd this user and start chatting!", color=0x67ff90), view=view)
+                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
                 except:
                     await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
             
