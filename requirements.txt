@@ -1,3 +1,4 @@
 motor
 git+https://github.com/Rapptz/discord.py
 requests
+topggpy
