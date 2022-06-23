@@ -19,6 +19,10 @@ class Tinder(commands.Cog):
         if not str(userid) in data["liked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
 
+    async def add_to_disliked(self, authorid, userid) -> None:
+        data = await self.bot.db.find_one({"_id": str(authorid)})
+        if not str(userid) in data["disliked_users"]:
+            await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"disliked_users":str(userid)}})
 
     async def add_to_likedby(self, likedbyid, userid) -> None:
         """ADD TO LIKEDBY DB"""
@@ -39,9 +43,11 @@ class Tinder(commands.Cog):
         _queue = data["queue"]
         liked_users = user_data["liked_users"]
         likedby_users = user_data["liked_by"]
+        disliked_users = user_data["disliked_users"]
 
         queue = [user for user in _queue if user not in liked_users]
         queue = [user for user in queue if user not in self.already_swiped]
+        queue = [user for user in queue if user not in disliked_users]
 
         if str(author.id) in queue:
             queue.remove(str(author.id))
@@ -160,6 +166,7 @@ class Tinder(commands.Cog):
 
 
         async def dislike_button_interaction(interaction):
+            await self.add_to_disliked(str(ctx.author.id), self.chat_partner_id)
             try:
                 self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
