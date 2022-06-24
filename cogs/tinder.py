@@ -31,7 +31,7 @@ class Tinder(commands.Cog):
             await self.bot.db.update_many({"_id": str(userid)}, {"$push": {"liked_by": str(likedbyid)}})
 
 
-    async def load_chatpartner(self, author, msg:any=None) -> str:
+    async def load_chatpartner(self, author, msg:any=None):
         """LOAD A NEW CHATPARTNER"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         
@@ -112,6 +112,7 @@ class Tinder(commands.Cog):
         """CHECK IF USER VOTED"""
         check = await self.topgg.get_user_vote(userid)
         await self.topgg.close()
+
         return check
 
     @commands.command(name='swipe', aliases=["match", "s"])
