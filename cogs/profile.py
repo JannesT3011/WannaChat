@@ -25,15 +25,22 @@ class Profile(commands.Cog):
         return await ctx.author.send(embed=embed)
     
     @profile.command(name="age")
-    async def profile_age(self, ctx, age:str):
+    async def profile_age(self, ctx, age:int):
         if age in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
+        if age > 119:
+            return await ctx.author.send("I dont think the oldest person on this world is using this Bot 👵. But if you are, send me a message with: `wc.bug`")
         try:
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}",color=EMBED_COLOR))
     
+    @profile_age.error
+    async def age_error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            return await ctx.author.send("Urgg, Thats not a number...", delete_after=5)
+
     @profile.command(name="language")
     async def profile_language(self, ctx, subcommand, *,language):
         if language in self.bot.blacklist:
