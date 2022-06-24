@@ -91,9 +91,8 @@ class Bot(commands.AutoShardedBot):
         elif isinstance(error, commands.CommandNotFound):
             return await ctx.send(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
         
-        elif isinstance(error, commands.BadArgument):
-            owner = self.get_user(self.ownerid)
-            return await owner.send(embed=OwnerErrorEmbed(str(error), ctx.guild.name))
+        elif isinstance(error, commands.CommandOnCooldown):
+            return await ctx.send(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
 
 bot = Bot()
 
