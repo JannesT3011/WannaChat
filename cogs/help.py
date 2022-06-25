@@ -42,6 +42,7 @@ class Help(commands.Cog):
     
     @help.command(name="profile")
     async def profile_command(self, ctx):
+        """PROFILE HELP COMMAND"""
         embed = discord.Embed(title="WannChat - Profile help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments, you DONT need to type `<>`!", color=EMBED_COLOR, timestamp=ctx.message.created_at)
         embed.add_field(name="Profile commands", value=f"`{PREFIX}profile`: View your profile\n"
         f"`{PREFIX}profile age <age>`: Set your age\n"
