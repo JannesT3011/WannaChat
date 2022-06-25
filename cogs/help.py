@@ -9,6 +9,7 @@ class Help(commands.Cog):
 
     @commands.group(name='help', invoke_without_command=True)
     async def help(self, ctx):
+        """HELP COMMAND"""
         embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments, you DONT need to type `<>`!", color=EMBED_COLOR, timestamp=ctx.message.created_at)
         embed.add_field(name="How to start:", value=f"1. Login with `{PREFIX}login`\n"
         f"2. Update your profile with `{PREFIX}profile <category>`\n"

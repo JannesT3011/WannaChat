@@ -14,12 +14,13 @@ class Tinder(commands.Cog):
         self.match_id = ""
 
     async def add_to_likeduser(self, authorid, userid) -> None:
-        """ADD USER TO LIKEDUSER DB""" 
+        """ADD SWIPED USER TO LIKED USER DB""" 
         data = await self.bot.db.find_one({"_id": str(authorid)})
         if not str(userid) in data["liked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
 
     async def add_to_disliked(self, authorid, userid) -> None:
+        """ADD SWIPED USER TO DISLIKED USER DB"""
         data = await self.bot.db.find_one({"_id": str(authorid)})
         if not str(userid) in data["disliked_users"]:
             await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"disliked_users":str(userid)}})
@@ -115,7 +116,7 @@ class Tinder(commands.Cog):
 
         return check
 
-    @commands.command(name='swipe', aliases=["match", "s"])
+    @commands.command(name='swipe', aliases=["match", "s", "chat"])
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
         self.already_swiped = []

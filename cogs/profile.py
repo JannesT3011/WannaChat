@@ -9,6 +9,7 @@ class Profile(commands.Cog):
 
     @commands.group(name='profile', invoke_without_command=True)
     async def profile(self, ctx):
+        """VIEW PROFILE"""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
@@ -22,10 +23,12 @@ class Profile(commands.Cog):
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
         embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX}profile <category>")
+        
         return await ctx.author.send(embed=embed)
     
     @profile.command(name="age")
     async def profile_age(self, ctx, age:int):
+        """SET YOUR PROFILE AGE"""
         if age in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         if age > 119:
@@ -34,15 +37,18 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"age": age}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+
         return await ctx.author.send(embed=discord.Embed(title=f"Age set to {age}",color=EMBED_COLOR))
     
     @profile_age.error
     async def age_error(self, ctx, error):
+        """AGE ERROR HANDLER"""
         if isinstance(error, commands.BadArgument):
             return await ctx.author.send("Urgg, Thats not a number...", delete_after=5)
 
     @profile.command(name="language")
     async def profile_language(self, ctx, subcommand, *,language):
+        """SET YOUR PROFILE LANGUAGE"""
         if language in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
@@ -79,6 +85,7 @@ class Profile(commands.Cog):
     
     @profile.command(name="aboutme")
     async def profile_aboutme(self, ctx, *, aboutme:str):
+        """SET YOUR PROFILE ABOUTME"""
         if len(aboutme) == 100:
             return await ctx.author.send("Aboutme can only be 100 characters long", delete_after=4)
         if any(word in aboutme for word in self.bot.blacklist):
@@ -87,10 +94,12 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"aboutme": aboutme}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+
         return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`", color=EMBED_COLOR))
     
     @profile.command(name="interests", aliases=["interest"])
     async def profile_interest(self, ctx, subcommand, *, interests):
+        """SET YOUR PROFILE INTERESTS"""
         if interests in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
@@ -123,6 +132,7 @@ class Profile(commands.Cog):
     
     @profile.command(name="gender")
     async def profile_gender(self, ctx, gender):
+        """SET YOUR PROFILE GENDER"""
         if gender in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         if not gender in ["male", "female", "divers"]:
@@ -131,6 +141,7 @@ class Profile(commands.Cog):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"gender": gender}})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+            
         return await ctx.author.send(embed=discord.Embed(title=f"Gender set to {gender}", color=EMBED_COLOR))
 
 async def setup(bot):

@@ -8,8 +8,9 @@ class Login(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='login')
+    @commands.command(name='login', aliases=["create"])
     async def login(self, ctx):
+        """LOGIN/CREATE YOUR ACCOUNT"""
         try:
             await Database().init_db(str(ctx.author.id))
         except:
@@ -17,9 +18,9 @@ class Login(commands.Cog):
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(ctx.author.id)}})
         return await ctx.author.send(embed=discord.Embed(title="Login successful!", color=EMBED_COLOR))
     
-    @commands.command(name="logoff")
+    @commands.command(name="logoff", aliases=["delete"])
     async def logoff(self, ctx):
-
+        """LOGOFF/DELETE YOUR ACCOUNT"""
         async def logoff_confirm_button(interaction):
             try:
                 await Database().delete_db(str(ctx.author.id))
