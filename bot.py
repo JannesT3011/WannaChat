@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import utils
-from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN
+from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH
 from database.database import DbClient, Database
 import datetime
 import requests
@@ -13,7 +13,7 @@ COGS = [
     "cogs.tinder",
 
     "cogs.support.support",
-    "cogs.owner.owner"
+    "cogs.owner.owner",
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -26,7 +26,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.1.1"
+        self.version = "v1.1.1D"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
