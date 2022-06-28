@@ -11,9 +11,12 @@ COGS = [
     "cogs.profile",
     "cogs.login",
     "cogs.tinder",
+    "cogs.reset",
 
     "cogs.support.support",
     "cogs.owner.owner",
+
+    "events.guild_join_login"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -26,7 +29,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.1.1D"
+        self.version = "v1.1.1"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
