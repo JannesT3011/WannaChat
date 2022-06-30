@@ -21,7 +21,7 @@ class GuildJoinLogin(commands.Cog):
             except:
                 return await interaction.user.send("Already login!")
             await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
-            await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!", color=EMBED_COLOR))
+            await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"))
 
         login_button.callback = login_button_interaction
         view.add_item(login_button)

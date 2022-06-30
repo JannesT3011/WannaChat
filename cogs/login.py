@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from database.database import Database
-from config import EMBED_COLOR
+from config import EMBED_COLOR, PREFIX
 from discord.ui import Button, View
 
 class Login(commands.Cog):
@@ -30,7 +30,7 @@ class Login(commands.Cog):
             await self.bot.queuedb.update_many({"_id": "queue"}, {"$pull": {"queue": str(ctx.author.id)}})
 
             await msg.delete()
-            return await ctx.author.send(embed=discord.Embed(title="Logoff successful!", description="Type `{PREFIX}swipe` to start!", color=EMBED_COLOR))
+            return await ctx.author.send(embed=discord.Embed(title="Logoff successful!", description="Type `{PREFIX}swipe` to start!", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"))
 
         async def logoff_cancel_button(interaction):
             return await msg.delete()
