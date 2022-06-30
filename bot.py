@@ -10,7 +10,7 @@ COGS = [
     "cogs.help",
     "cogs.profile",
     "cogs.login",
-    "cogs.tinder",
+    "cogs.swipe",
 
     "cogs.support.support",
     "cogs.owner.owner",
