@@ -14,7 +14,7 @@ class Login(commands.Cog):
         try:
             await Database().init_db(str(ctx.author.id))
         except:
-            return await ctx.author.send("Already login!", delete_after=4)
+            return await ctx.author.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors"))
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(ctx.author.id)}})
         return await ctx.author.send(embed=discord.Embed(title="Login successful!", color=EMBED_COLOR))
     
