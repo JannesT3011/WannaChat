@@ -5,7 +5,7 @@ from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN
 import topgg
 
-class Tinder(commands.Cog):
+class Swipe(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.already_swiped = []
@@ -201,4 +201,4 @@ class Tinder(commands.Cog):
         msg = await ctx.author.send(embed=embed, view=view)
 
 async def setup(bot):
-    await bot.add_cog(Tinder(bot))
+    await bot.add_cog(Swipe(bot))
