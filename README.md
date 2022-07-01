@@ -5,6 +5,9 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 
 <img src="https://github.com/JannesT3011/WannaChat/blob/main/logo.png" alt="LOGO"> 
 
+[![Discord Bots](https://top.gg/api/widget/servers/979065679376437308.svg)(https://top.gg/bot/979065679376437308)
+
+
 ### How to Start:
 
 1. Login with wc.login
@@ -46,3 +49,4 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [ ] slash commands
 - [X] message not deleting after no more users
 - [ ] top.gg images for README
+- [X] On Join message with button > Click button to create WannaMeme account! (try, except)
