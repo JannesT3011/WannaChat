@@ -5,7 +5,9 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 
 <img src="https://github.com/JannesT3011/WannaChat/blob/main/logo.png" alt="LOGO"> 
 
-![Discord Bots](https://top.gg/api/widget/servers/979065679376437308.svg)
+![Discord Bots](https://top.gg/api/widget/servers/979065679376437308.svg) ![Discord Bots](https://top.gg/api/widget/upvotes/979065679376437308.svg)
+
+[top.gg]( https://top.gg/bot/979065679376437308 )
 
 
 ### How to Start:
