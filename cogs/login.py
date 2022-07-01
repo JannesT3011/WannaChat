@@ -4,19 +4,22 @@ from database.database import Database
 from config import EMBED_COLOR, PREFIX
 from discord.ui import Button, View
 
+from cogs.profile import SelectView
+
 class Login(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='login', aliases=["create"])
+    @commands.command(name='login', aliases=["create"]) # TODO buttons with profile options
     async def login(self, ctx):
         """LOGIN/CREATE YOUR ACCOUNT"""
         try:
             await Database().init_db(str(ctx.author.id))
         except:
-            return await ctx.author.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors"))
+            return await ctx.author.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:"), view=SelectView(author=ctx.author, bot=self.bot))
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(ctx.author.id)}})
-        return await ctx.author.send(embed=discord.Embed(title="Login successful!", color=EMBED_COLOR))
+
+        return await ctx.author.send(embed=discord.Embed(title="Login successful!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:", color=EMBED_COLOR), view=SelectView(author=ctx.author, bot=self.bot))
     
     @commands.command(name="logoff", aliases=["delete"])
     async def logoff(self, ctx):
@@ -30,7 +33,7 @@ class Login(commands.Cog):
             await self.bot.queuedb.update_many({"_id": "queue"}, {"$pull": {"queue": str(ctx.author.id)}})
 
             await msg.delete()
-            return await ctx.author.send(embed=discord.Embed(title="Logoff successful!", description="Type `{PREFIX}swipe` to start!", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"))
+            return await ctx.author.send(embed=discord.Embed(title="Logoff successful!", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"))
 
         async def logoff_cancel_button(interaction):
             return await msg.delete()

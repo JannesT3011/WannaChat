@@ -2,6 +2,30 @@ import discord
 from discord.ext import commands
 from config import PREFIX, EMBED_COLOR
 
+class GenderSelect(discord.ui.Select):
+    def __init__(self, author: discord.User, bot):
+        self.author = author
+        self.bot = bot
+        options = [            
+            discord.SelectOption(label="Male",emoji="♂️",),
+            discord.SelectOption(label="Female",emoji="♀️"),
+            discord.SelectOption(label="Divers",emoji="🧑")
+        ]
+        super().__init__(placeholder="Select your gender", max_values=1, min_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        try:
+            await self.bot.db.update_many({"_id": str(self.author.id)}, {"$set": {"gender": self.values[0]}})
+        except:
+            return await interaction.response.send_message(f"Please use `{PREFIX}login` first")
+            
+        return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR))
+
+
+class SelectView(discord.ui.View):
+    def __init__(self, *, author:discord.User, bot, timeout = None):
+        super().__init__(timeout=timeout)
+        self.add_item(GenderSelect(author=author, bot=bot))
 
 class Profile(commands.Cog):
     def __init__(self, bot):
@@ -23,8 +47,8 @@ class Profile(commands.Cog):
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
         embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX}profile <category>")
-        
-        return await ctx.author.send(embed=embed)
+
+        return await ctx.author.send(embed=embed, view=SelectView(author=ctx.author, bot=self.bot))
     
     @profile.command(name="age")
     async def profile_age(self, ctx, age:int):
