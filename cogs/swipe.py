@@ -108,14 +108,21 @@ class Swipe(commands.Cog):
             return True
 
         return False
-    
-    async def check_vote(self, userid:int) -> bool:
-        """CHECK IF USER VOTED"""
-        check = await self.topgg.get_user_vote(userid)
-        await self.topgg.close()
 
+    async def on_swipelimit(self, data) -> bool:
+        if len(data["liked_users"]) > 75:
+            return True
+        return False
+
+    async def voted(self, userid:int) -> bool:
+        """CHECK IF USER VOTED"""
+        topgg_client = topgg.DBLClient(self.bot, TOPGG_TOKEN)
+        check = await topgg_client.get_user_vote(userid)
+        await topgg_client.close()
+        
         return check
 
+    @commands.cooldown(1, 30.0, commands.BucketType.user)
     @commands.command(name='swipe', aliases=["match", "s", "chat"])
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
@@ -125,6 +132,13 @@ class Swipe(commands.Cog):
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+
+        if await self.on_swipelimit(data) and not await self.voted(int(ctx.author.id)):
+            vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
+            view = View(timeout=None)
+            view.add_item(vote_button)
+            return await ctx.author.send(embed=discord.Embed(title="You reached the like limit!", description="Vote to get infinity likes!", color=EMBED_COLOR), view=view)
+
         self.chat_partner_id = await self.load_chatpartner(ctx.author)
         self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
