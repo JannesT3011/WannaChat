@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import utils
 from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN
-from database.database import DbClient, Database
+from database.database import DbClient
 import datetime
 import requests
 
@@ -95,6 +95,10 @@ class Bot(commands.AutoShardedBot):
         
         elif isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
+        
+        else:
+            channel = self.get_channel(992779863855476826)
+            return await channel.send(embed=ErrorEmbed(f"```{error}```"))
 
 bot = Bot()
 
