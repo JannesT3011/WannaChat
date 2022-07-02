@@ -88,6 +88,9 @@ class Profile(commands.Cog):
             language = language[0]
             if len(data["language"]) > 5:
                 return await ctx.author.send("You can have max. 5 languages!")
+            
+            if language in data["language"]:
+                return await ctx.author.send("Language already added!")
 
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"language": language.lower()}})
             return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR))

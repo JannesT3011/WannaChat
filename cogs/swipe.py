@@ -90,7 +90,7 @@ class Swipe(commands.Cog):
 
         embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=EMBED_COLOR)
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
-        embed.add_field(name="Language", value=chat_partner_data["language"], inline=True)
+        embed.add_field(name="Language", value=", ".join(chat_partner_data["language"]), inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])
         if not len(chat_partner_data["interests"]) == 0:
             embed.add_field(name="Interests", value=", ".join(chat_partner_data['interests']), inline=False)
