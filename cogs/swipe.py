@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 from discord.ui import Button, View
-from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN
+from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
 import topgg
 
 class Swipe(commands.Cog):
@@ -110,7 +110,7 @@ class Swipe(commands.Cog):
         return False
 
     async def on_swipelimit(self, data) -> bool:
-        if len(data["liked_users"]) > 75:
+        if len(data["liked_users"]) > LIMIT_LIKES:
             return True
         return False
 
