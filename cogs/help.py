@@ -19,13 +19,15 @@ class Help(commands.Cog):
         embed.add_field(name="Commands", value=f"`{PREFIX}login`: Create an account\n"
         f"`{PREFIX}logout`: Delete your account\n"
         f"`{PREFIX}profile`: View your profile\n"
-        f"`{PREFIX}profile age <age>`: Set your age\n"
-        f"`{PREFIX}profile language add <language>`: Set your language\n"
-        f"`{PREFIX}profile language remove <language>`: Remove a language\n"
-        f"`{PREFIX}profile gender <gender>`: Set your gender\n"
-        f"`{PREFIX}profile interests add <interest>`: Set your interest\n"
-        f"`{PREFIX}profile interests remove <interest>`: Remove interest\n"
-        f"`{PREFIX}profile aboutme <aboutme_text>`: Set your AboutMe text\n",
+        f"`{PREFIX}age <age>`: Set your age\n"
+        f"`{PREFIX}language`: View your current languages\n"
+        f"`{PREFIX}language add <language>`: Set your language\n"
+        f"`{PREFIX}language remove <language>`: Remove a language\n"
+        f"`{PREFIX}gender <gender>`: Set your gender\n"
+        f"`{PREFIX}interests`: View your current interests\n"
+        f"`{PREFIX}interests add <interest>`: Set your interest\n"
+        f"`{PREFIX}interests remove <interest>`: Remove interest\n"
+        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
         embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
         f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestionn\nOr join the [support server]( {SUPPORT_SERVER_LINK} )\n"
@@ -45,13 +47,16 @@ class Help(commands.Cog):
         """PROFILE HELP COMMAND"""
         embed = discord.Embed(title="WannChat - Profile help", description="Swipe to find random chat partners!\nUse me in my DMs\n<> are required arguments, you DONT need to type `<>`!", color=EMBED_COLOR, timestamp=ctx.message.created_at)
         embed.add_field(name="Profile commands", value=f"`{PREFIX}profile`: View your profile\n"
-        f"`{PREFIX}profile age <age>`: Set your age\n"
-        f"`{PREFIX}profile language add <language>`: Set your language\n"
-        f"`{PREFIX}profile language remove <language>`: Remove a language\n"
-        f"`{PREFIX}profile gender <gender>`: Set your gender\n"
-        f"`{PREFIX}profile interests add <interest>`: Set your interest\n"
-        f"`{PREFIX}profile interests remove <interest>`: Remove interest\n"
-        f"`{PREFIX}profile aboutme <aboutme_text>`: Set your AboutMe text\n",
+        f"`{PREFIX}profile`: View your profile\n"
+        f"`{PREFIX}age <age>`: Set your age\n"
+        f"`{PREFIX}language`: View your current languages\n"
+        f"`{PREFIX}language add <language>`: Set your language\n"
+        f"`{PREFIX}language remove <language>`: Remove a language\n"
+        f"`{PREFIX}gender <gender>`: Set your gender\n"
+        f"`{PREFIX}interests`: View your current interests\n"
+        f"`{PREFIX}interests add <interest>`: Set your interest\n"
+        f"`{PREFIX}interests remove <interest>`: Remove interest\n"
+        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
         embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
         
