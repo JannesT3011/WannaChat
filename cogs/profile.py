@@ -31,7 +31,7 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name='profile', invoke_without_command=True)
+    @commands.command(name="profile")
     async def profile(self, ctx):
         """VIEW PROFILE"""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
@@ -50,7 +50,7 @@ class Profile(commands.Cog):
 
         return await ctx.author.send(embed=embed, view=SelectView(author=ctx.author, bot=self.bot))
     
-    @profile.command(name="age")
+    @commands.command(name="age")
     async def profile_age(self, ctx, age:int):
         """SET YOUR PROFILE AGE"""
         if age in self.bot.blacklist:
@@ -70,47 +70,54 @@ class Profile(commands.Cog):
         if isinstance(error, commands.BadArgument):
             return await ctx.author.send("Urgg, Thats not a number...", delete_after=5)
 
-    @profile.command(name="language")
-    async def profile_language(self, ctx, subcommand, *,language):
+    @commands.group(name="language", aliases=["languages"], invoke_without_command=True) 
+    async def language(self, ctx):
         """SET YOUR PROFILE LANGUAGE"""
+        try:
+            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        except:
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+            
+        return await ctx.author.send(embed=discord.Embed(title="Your current languages:", description=", ".join(data["language"])).set_footer(text=f"Use: {PREFIX}language <add/delete> to add/delete a language"))
+    
+    @language.command(name="add")
+    async def language_add(self, ctx, language:str):
         if language in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
             data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-
-        if subcommand == "add":
-            language = language.split(" ")
-            if len(language) > 1:
-                return await ctx.author.send("Please use only one word, as language!", delete_after=5)
-            
-            language = language[0]
-            if len(data["language"]) > 5:
-                return await ctx.author.send("You can have max. 5 languages!")
-            
-            if language in data["language"]:
-                return await ctx.author.send("Language already added!")
-
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"language": language.lower()}})
-            return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR))
-
-        if subcommand == "delete" or subcommand == "remove":
-            if language not in data["language"]:
-                return await ctx.author.send("Cant find that!", delete_after=5)
-            
-            if len(data["language"]) == 1:
-                return await ctx.author.send("You need at least one language!")
-
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"language": language.lower()}})
-
-            return await ctx.author.send(embed=f"{language} successfully removed!")
         
-        else:
-            return await ctx.author.send("Invalid argument, please use: `add`or `remove`")
+        if len(data["language"]) > 5:
+            return await ctx.author.send("You can have max. 5 languages!")
+        
+        if language in data["language"]:
+            return await ctx.author.send("Language already added!")
+        await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"language": language.lower()}})
+
+        return await ctx.author.send(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR))
+    
+    @language.command(name="delete", aliases=["remove"])
+    async def language_delete(self, ctx, language:str):
+        if language in self.bot.blacklist:
+            return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
+        try:
+            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        except:
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+        
+        if language not in data["language"]:
+            return await ctx.author.send(embed=discord.Embed(title=f"Language removed: {language}", color=EMBED_COLOR))
+        
+        if len(data["language"]) == 1:
+            return await ctx.author.send("You need at least one language!")
+        await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"language": language.lower()}})
+
+        return await ctx.author.send(f"{language} successfully removed!")
     
     
-    @profile.command(name="aboutme")
+    @commands.command(name="aboutme")
     async def profile_aboutme(self, ctx, *, aboutme:str):
         """SET YOUR PROFILE ABOUTME"""
         if len(aboutme) == 100:
@@ -124,9 +131,19 @@ class Profile(commands.Cog):
 
         return await ctx.author.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`", color=EMBED_COLOR))
     
-    @profile.command(name="interests", aliases=["interest"])
-    async def profile_interest(self, ctx, subcommand, *, interests):
+    @commands.group(name="interests", aliases=["interest"], invoke_without_command=True)
+    async def interests(self, ctx):
         """SET YOUR PROFILE INTERESTS"""
+        try:
+            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        except:
+            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
+
+        return await ctx.author.send(embed=discord.Embed(title="Your current interests:", description=", ".join(data["interests"])).set_footer(text=f"Use: {PREFIX}interests <add/delete> to add/delete a interests"))
+    
+    @interests.command(name="add")
+    async def interest_add(self, ctx, *, interests:str):
+        """ADD INTEREST"""
         if interests in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
         try:
@@ -134,42 +151,38 @@ class Profile(commands.Cog):
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
 
-        if subcommand == "add":
-            interest = interests.split(" ")
-            if len(interest) > 1:
-                return await ctx.author.send("Please use only one word, as interest tag!", delete_after=5)
-            
-            interest = interest[0]
-            if len(data["interests"]) > 5:
-                return await ctx.author.send("You can have max. 5 interests!")
+        interest = interests.split(" ")
 
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"interests": interest}})
-            return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interest}", color=EMBED_COLOR))
-
-        if subcommand == "delete" or subcommand == "remove":
-            if interests not in data["interests"]:
-                return await ctx.author.send("Cant find that!", delete_after=5)
-            
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"interests": interests}})
-
-            return await ctx.author.send(f"{interests} successfully removed!")
+        if len(interest) > 1:
+            return await ctx.author.send("Please use only one word, as interest tag!", delete_after=5)
         
-        else:
-            return await ctx.author.send("Invalid argument, please use: `add`or `remove`")
+        interest = interest[0]
+        if len(data["interests"]) > 5:
+            return await ctx.author.send("You can have max. 5 interests!")
+        await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$push": {"interests": interest}})
+
+        return await ctx.author.send(embed=discord.Embed(title=f"Interest added: {interest}", color=EMBED_COLOR))
     
-    @profile.command(name="gender")
-    async def profile_gender(self, ctx, gender):
-        """SET YOUR PROFILE GENDER"""
-        if gender in self.bot.blacklist:
+    @interests.command(name="delete", aliases=["remove"])
+    async def interest_delete(self, ctx, *, interests:str):
+        """DELETE A INTEREST"""
+        if interests in self.bot.blacklist:
             return await ctx.author.send("Uh, dont use that word! 😞", delete_after=5)
-        if not gender in ["male", "female", "divers"]:
-            return await ctx.author.send("Invalid gender, please use: `male`, `female`, `divers`")
         try:
-            await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"gender": gender}})
+            data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         except:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-            
-        return await ctx.author.send(embed=discord.Embed(title=f"Gender set to {gender}", color=EMBED_COLOR))
+        if interests not in data["interests"]:
+            return await ctx.author.send("Cant find that!", delete_after=5)
+        
+        await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$pull": {"interests": interests}})
+        return await ctx.author.send(embed=discord.Embed(title=f"Interest removed: {interests}", color=EMBED_COLOR))
+    
+    @commands.command(name="gender")
+    async def profile_gender(self, ctx):
+        """SET YOUR PROFILE GENDER"""
+
+        return await ctx.author.send(view=SelectView(author=ctx.author, bot=self.bot))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))
