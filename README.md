@@ -31,6 +31,25 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 - wc.bug : Report a bug
 - wc.suggestions : Submit new feature suggestion
 
+### Config
+The config.py should look like this:
+```python
+# BOT CONFIG
+TOKEN = ""
+PREFIX = ""
+OWNERID = ""
+BLACKLIST_FILE_PATH = "data/blacklist.txt"
+EMBED_COLOR = 0xBDDDF4
+SUPPORT_SERVER_LINK = ""
+LIMIT_LIKES = 50
+# DATABASE CONFIG STUFF
+CONNECTION = ""
+CLUSTER = ""
+DB = ""
+QUEUEDB = ""
+# TOP.GG
+TOPGG_TOKEN = ""
+```
 
 ### What data will be collected?
 The bot only collect and store your UserID and your user name to link it to your profile.
@@ -45,10 +64,13 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [X] bug command (submit bug to owner/support server)
 - [X] suggestion/idea (submit idea to owner/support server)
 - [ ] Premium: See who liked you! (direct match with them!) ()
-- [ ] Vote benefit > limit likes (50) if not voted!
-- [ ] Vote log for server (give server role)
+- [X] Vote benefit > limit likes (50) if not voted!
+- [X] Vote log for server (give server role)
 - [ ] on_timeout
 - [ ] slash commands
 - [X] message not deleting after no more users
 - [ ] top.gg images for README
 - [X] On Join message with button > Click button to create WannaMeme account! (try, except)
+- [X] error log
+- [ ] news > github api
+- [ ] AI chat with bot
