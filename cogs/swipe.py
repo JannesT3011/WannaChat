@@ -79,7 +79,7 @@ class Swipe(commands.Cog):
             else:
                 chat_partner = random.choice(queue)
 
-        self.already_swiped.append(chat_partner) # TODO add to monthly swipe file
+        self.already_swiped.append(chat_partner) 
         
         return chat_partner
 
@@ -110,6 +110,7 @@ class Swipe(commands.Cog):
         return False
 
     async def on_swipelimit(self, data) -> bool:
+        """CHECK IF USER ON SWIPELIMIT"""
         if len(data["liked_users"]) > LIMIT_LIKES:
             return True
         return False
@@ -123,7 +124,7 @@ class Swipe(commands.Cog):
         return check
 
     @commands.cooldown(1, 30.0, commands.BucketType.user)
-    @commands.command(name='swipe', aliases=["match", "s", "chat"])
+    @commands.command(name='swipe', aliases=["s", "chat"])
     async def swipe(self, ctx):
         """SWIPE COMMAND"""
         self.already_swiped = []
