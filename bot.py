@@ -6,6 +6,7 @@ from database.database import DbClient
 import datetime
 import requests
 from checks.voted import NotVoted
+from discord.ui import Button, View
 
 COGS = [
     "cogs.help",
@@ -90,7 +91,10 @@ class Bot(commands.AutoShardedBot):
             return await ctx.send(embed=ErrorEmbed(str(error)))
         
         elif isinstance(error, NotVoted):
-           return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote"))
+            vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
+            view = View(timeout=None)
+            view.add_item(vote_button)
+            return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote"), view=view)
 
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send(embed=ErrorEmbed(str(error)))
