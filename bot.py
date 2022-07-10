@@ -5,6 +5,7 @@ from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN
 from database.database import DbClient
 import datetime
 import requests
+from checks.voted import NotVoted
 
 COGS = [
     "cogs.help",
@@ -15,7 +16,8 @@ COGS = [
     "cogs.support.support",
     "cogs.owner.owner",
 
-    "events.guild_join_login"
+    "events.guild_join_login",
+    "cogs.benefits.likedby"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -28,7 +30,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.2.2"
+        self.version = "v1.2.3"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
@@ -87,9 +89,12 @@ class Bot(commands.AutoShardedBot):
         elif isinstance(error, commands.BotMissingRole):
             return await ctx.send(embed=ErrorEmbed(str(error)))
         
+        elif isinstance(error, NotVoted):
+           return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote"))
+
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send(embed=ErrorEmbed(str(error)))
-        
+
         elif isinstance(error, commands.CommandNotFound):
             return await ctx.send(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
         

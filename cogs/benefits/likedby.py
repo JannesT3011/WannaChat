@@ -4,7 +4,6 @@ SEE WHO LIKED YOU
 import discord
 from discord.ext import commands
 from config import PREFIX, EMBED_COLOR
-from discord.ui import Button, View
 from checks.voted import is_voter
 
 
