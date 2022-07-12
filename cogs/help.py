@@ -29,7 +29,11 @@ class Help(commands.Cog):
         f"`{PREFIX}interests remove <interest>`: Remove interest\n"
         f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
-        embed.add_field(name="Voting benefit commands", value=f"`{PREFIX}likedby`: See the users who liked you", inline=False)
+        embed.add_field(name="Voting benefit commands", value=f"`{PREFIX}likedby`: See the users who liked you\n"
+        f"`{PREFIX}reset`: Reset your likes and dislikes\n"
+        f"`{PREFIX}reset likes`: Reset your likes\n"
+        f"`{PREFIX}reset dislikes`: Reset your dislikes\n", 
+        inline=False)
         embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
         f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestionn\nOr join the [support server]( {SUPPORT_SERVER_LINK} )\n"
         "To support and grow the Bot you can vote. This helps me to grow and brings new users, so you can make new friends.😊")
