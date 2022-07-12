@@ -17,6 +17,7 @@ class Reset(commands.Cog):
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @commands.group(name='reset', aliases=["r"], invoke_without_command=True)
     async def reset(self, ctx):
+        """RESET YOUR LIKES AND DISLIKES"""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
@@ -45,6 +46,7 @@ class Reset(commands.Cog):
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset.command(name="likes", aliases=["l"])
     async def reset_likes(self, ctx):
+        """RESET YOUR LIKES"""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
@@ -71,6 +73,7 @@ class Reset(commands.Cog):
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset.command(name="dislikes", aliases=["dl"])
     async def reset_dislikes(self, ctx):
+        """RESET YOUR DISLIKES"""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         if data is None:
             return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)

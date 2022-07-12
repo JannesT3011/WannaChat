@@ -18,7 +18,8 @@ COGS = [
     "cogs.owner.owner",
 
     "events.guild_join_login",
-    "cogs.benefits.likedby"
+    "cogs.benefits.likedby",
+    "cogs.benefits.reset"
 ]
 
 class Bot(commands.AutoShardedBot):
