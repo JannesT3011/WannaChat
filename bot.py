@@ -2,10 +2,11 @@ import discord
 from discord.ext import commands
 from discord import utils
 from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN, EMBED_COLOR
-from database.database import DbClient
+from database.database import DbClient, Database
 import datetime
 import requests
 from checks.voted import NotVoted
+from checks.registered import NotRegistered
 from discord.ui import Button, View
 
 COGS = [
@@ -96,6 +97,23 @@ class Bot(commands.AutoShardedBot):
             view = View(timeout=None)
             view.add_item(vote_button)
             return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote", color=EMBED_COLOR), view=view)
+
+        elif isinstance(error, NotRegistered):
+            embed = discord.Embed(title="You are not registered! 😔", description=f"Press the button to join the network and find new friends 🧑!\nTo see all commands use `{PREFIX}help`.", color=EMBED_COLOR)
+            view = View(timeout=None)
+            login_button = Button(label="Login", emoji="💬", style=discord.ButtonStyle.blurple)
+
+            async def login_button_interaction(interaction):
+                try:
+                    await Database().init_db(str(interaction.user.id))
+                except:
+                    return await interaction.user.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self.bot)) # TODO buttons with profile options
+                await self.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
+                await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=self.bot))
+
+            login_button.callback = login_button_interaction
+            view.add_item(login_button)
+            return await ctx.author.send(embed=embed, view=view)
 
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send(embed=ErrorEmbed(str(error)))

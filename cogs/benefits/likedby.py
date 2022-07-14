@@ -4,15 +4,18 @@ SEE WHO LIKED YOU
 import discord
 from discord.ext import commands
 from config import PREFIX, EMBED_COLOR
+from discord.ui import Button, View
 from checks.voted import is_voter
+from checks.registered import is_registered
 
 
 class LikedBy(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
+    @is_registered()
     @is_voter()
-    @commands.command(name="likedby")
+    @commands.command(name="likedby") # TODO random button!
     async def likedby(self, ctx):
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
         data = data["liked_by"]

@@ -4,6 +4,7 @@ import random
 from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
 import topgg
+from checks.registered import is_registered
 
 class Swipe(commands.Cog):
     def __init__(self, bot):
@@ -36,10 +37,7 @@ class Swipe(commands.Cog):
         """LOAD A NEW CHATPARTNER"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         
-        try:
-            user_data = await self.bot.db.find_one({"_id": str(author.id)})
-        except:
-            return await author.send(f"Please use `{PREFIX}login` first")
+        user_data = await self.bot.db.find_one({"_id": str(author.id)})
 
         _queue = data["queue"]
         liked_users = user_data["liked_users"]
@@ -104,7 +102,7 @@ class Swipe(commands.Cog):
     async def is_match(self, authorid, partnerid) -> bool:
         """CHECK IF MATCH"""
         partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
-        if str(authorid) in partner_data["liked_users"]:
+        if str(authorid) in partner_data["liked_users"]: # TODO count matches!
             return True
 
         return False
@@ -115,7 +113,7 @@ class Swipe(commands.Cog):
             return True
         return False
 
-    async def voted(self, userid:int) -> bool:
+    async def voted(self, userid:int) -> bool: # TODO Check if in voting list!
         """CHECK IF USER VOTED"""
         topgg_client = topgg.DBLClient(self.bot, TOPGG_TOKEN)
         check = await topgg_client.get_user_vote(userid)
@@ -123,6 +121,7 @@ class Swipe(commands.Cog):
         
         return check
 
+    @is_registered()
     @commands.cooldown(1, 30.0, commands.BucketType.user)
     @commands.command(name='swipe', aliases=["s", "chat"])
     async def swipe(self, ctx):
@@ -131,8 +130,6 @@ class Swipe(commands.Cog):
         self.match = ""
         self.match_id = ""
         data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
-        if data is None:
-            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
 
         if await self.on_swipelimit(data) and not await self.voted(int(ctx.author.id)):
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")

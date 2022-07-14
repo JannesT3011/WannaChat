@@ -8,20 +8,19 @@ from discord.ext import commands
 from config import PREFIX, EMBED_COLOR
 from discord.ui import Button, View
 from checks.voted import is_voter
+from checks.registered import is_registered
 
 class Reset(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @is_registered()
     @is_voter()
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @commands.group(name='reset', aliases=["r"], invoke_without_command=True)
     async def reset(self, ctx):
         """RESET YOUR LIKES AND DISLIKES"""
-        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
-        if data is None:
-            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
-        
+
         async def confirm_button_interaction(interaction):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"disliked_users": []}})
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"liked_users": []}})
@@ -42,14 +41,12 @@ class Reset(commands.Cog):
 
         msg = await ctx.author.send(embed=discord.Embed(title="Are you sure you want to reset your liked and disliked users?", color=EMBED_COLOR), view=view)
 
+    @is_registered()
     @is_voter()
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset.command(name="likes", aliases=["l"])
     async def reset_likes(self, ctx):
         """RESET YOUR LIKES"""
-        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
-        if data is None:
-            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         
         async def confirm_button_interaction(interaction):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"liked_users": []}})
@@ -69,14 +66,12 @@ class Reset(commands.Cog):
 
         msg = await ctx.author.send(embed=discord.Embed(title="Are you sure you want to reset your liked users?", color=EMBED_COLOR), view=view)
 
+    @is_registered()
     @is_voter()
     @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset.command(name="dislikes", aliases=["dl"])
     async def reset_dislikes(self, ctx):
         """RESET YOUR DISLIKES"""
-        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
-        if data is None:
-            return await ctx.author.send(f"Please use `{PREFIX}login` first", delete_after=4)
         
         async def confirm_button_interaction(interaction):
             await self.bot.db.update_many({"_id": str(ctx.author.id)}, {"$set": {"disliked_users": []}})
