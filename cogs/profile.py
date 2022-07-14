@@ -15,10 +15,7 @@ class GenderSelect(discord.ui.Select):
         super().__init__(placeholder="Select your gender", max_values=1, min_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        try:
-            await self.bot.db.update_many({"_id": str(self.author.id)}, {"$set": {"gender": self.values[0]}})
-        except:
-            return await interaction.response.send_message(f"Please use `{PREFIX}login` first")
+        await self.bot.db.update_many({"_id": str(self.author.id)}, {"$set": {"gender": self.values[0]}})
             
         return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR))
 
