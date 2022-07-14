@@ -31,6 +31,11 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 - wc.bug : Report a bug
 - wc.suggestions : Submit new feature suggestion
 
+- wc.likedby: See the users who liked you
+- wc.reset: Reset your likes and dislikes
+- wc.reset likes: Reset your likes
+- wc.reset dislikes: Reset your dislikes
+
 ### Config
 The config.py should look like this:
 ```python
@@ -74,3 +79,6 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [X] error log
 - [ ] news > github api
 - [ ] AI chat with bot
+- [ ] report
+- [ ] meme (link from reddit or other trustful memes sites)
+- [ ] random command > returns random user who liked you!
