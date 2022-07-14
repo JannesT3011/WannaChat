@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import utils
-from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN
+from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN, EMBED_COLOR
 from database.database import DbClient
 import datetime
 import requests
@@ -95,7 +95,7 @@ class Bot(commands.AutoShardedBot):
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.user.id}/vote")
             view = View(timeout=None)
             view.add_item(vote_button)
-            return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote"), view=view)
+            return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote", color=EMBED_COLOR), view=view)
 
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send(embed=ErrorEmbed(str(error)))
