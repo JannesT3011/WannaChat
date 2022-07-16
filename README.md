@@ -72,7 +72,7 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [X] Vote benefit > limit likes (50) if not voted!
 - [X] Vote log for server (give server role)
 - [ ] on_timeout
-- [ ] slash commands
+- [X] slash commands
 - [X] message not deleting after no more users
 - [ ] top.gg images for README
 - [X] On Join message with button > Click button to create WannaMeme account! (try, except)
@@ -82,3 +82,4 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [ ] report
 - [ ] meme (link from reddit or other trustful memes sites)
 - [ ] random command > returns random user who liked you!
+- [ ] Business contacts

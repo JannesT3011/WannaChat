@@ -83,7 +83,7 @@ class Bot(commands.AutoShardedBot):
         requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
 
     async def on_guild_remove(self, guild):
-        data = {"server_count": len(self.guilds)}
+        data = {"server_count": len(self.guilds)} # TODO async!!!
         requests.post("https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
 
     async def on_command_error(self, ctx, error):

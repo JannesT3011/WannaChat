@@ -134,3 +134,8 @@ config.py
 test.py
 topgg/
 plan.md
+
+# not done yet:
+match.py
+userinfo.py
+random.py
