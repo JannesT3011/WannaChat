@@ -18,7 +18,7 @@ class GenderSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         await self.bot.db.update_many({"_id": str(self.author.id)}, {"$set": {"gender": self.values[0]}})
             
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR))
+        return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR), ephemeral=True)
 
 
 class SelectView(discord.ui.View):
@@ -81,7 +81,7 @@ class Profile(commands.Cog):
         if await registered(self.bot, interaction.user):
             data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
                 
-            return await interaction.response.send_message(embed=discord.Embed(title="Your current languages:", description=", ".join(data["language"])).set_footer(text=f"Use: {PREFIX}language <add/delete> to add/delete a language"))
+            return await interaction.response.send_message(embed=discord.Embed(title="Your current languages:", description=", ".join(data["language"])).set_footer(text=f"Use: {PREFIX}language <add/delete> to add/delete a language"), ephemeral=True)
         
     #@is_registered()
     @language_group.command(name="add", description="Add one language")
@@ -99,7 +99,7 @@ class Profile(commands.Cog):
                 return await interaction.response.send_message("Language already added!")
             await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$push": {"language": language.lower()}})
 
-            return await interaction.response.send_message(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR))
+            return await interaction.response.send_message(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR), ephemeral=True)
         
     #@is_registered()
     @language_group.command(name="remove", description="Remove a language")
