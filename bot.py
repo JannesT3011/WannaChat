@@ -8,6 +8,7 @@ import requests
 from checks.voted import NotVoted
 from checks.registered import NotRegistered
 from discord.ui import Button, View
+import topgg
 
 COGS = [
     "cogs.help",
@@ -63,8 +64,10 @@ class Bot(commands.AutoShardedBot):
     async def on_ready(self):
         await self.load_cogs()
 
-        data = {"server_count": len(self.guilds)}
-        requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
+        await topgg_client.post_guild_count(len(self.guilds))
+        await topgg_client.close()
+
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
     async def on_message(self, message: discord.Message):
@@ -79,12 +82,14 @@ class Bot(commands.AutoShardedBot):
         await self.process_commands(message)
 
     async def on_guild_join(self, guild):
-        data = {"server_count": len(self.guilds)}
-        requests.post(f"https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
+        await topgg_client.post_guild_count(len(self.guilds))
+        await topgg_client.close()
 
     async def on_guild_remove(self, guild):
-        data = {"server_count": len(self.guilds)} # TODO async!!!
-        requests.post("https://top.gg/api/bots/{self.user.id}/stats", headers={"Authorization": TOPGG_TOKEN}, data=data)
+        topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
+        await topgg_client.post_guild_count(len(self.guilds))
+        await topgg_client.close()
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
