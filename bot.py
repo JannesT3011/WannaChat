@@ -28,7 +28,7 @@ class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         intents = discord.Intents.default()
         super(Bot, self).__init__(
-            command_prefix=PREFIX,
+            command_prefix="wc.",
             description="Chat with someone random!",
             intents=intents,
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
