@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import random
 from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
@@ -33,7 +34,7 @@ class Swipe(commands.Cog):
             await self.bot.db.update_many({"_id": str(userid)}, {"$push": {"liked_by": str(likedbyid)}})
 
 
-    async def load_chatpartner(self, author, msg:any=None):
+    async def load_chatpartner(self, author, interaction: discord.Interaction):
         """LOAD A NEW CHATPARTNER"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         
@@ -52,7 +53,7 @@ class Swipe(commands.Cog):
             queue.remove(str(author.id))
         if len(queue) == 0:
             try:
-                await msg.delete()
+                await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
             except:
                 pass
             return await author.send(f"Oh 😔, No more users! Please try again later!")
@@ -62,7 +63,7 @@ class Swipe(commands.Cog):
         while chat_partner == str(author.id):
             if len(queue) == 0:
                 try:
-                    await msg.delete()
+                    await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
                 except:
                     pass
                 return await author.send(f"Oh 😔, No more users! Please try again later")
@@ -123,55 +124,55 @@ class Swipe(commands.Cog):
 
     @is_registered()
     @commands.cooldown(1, 30.0, commands.BucketType.user)
-    @commands.command(name='swipe', aliases=["s", "chat"])
-    async def swipe(self, ctx):
+    @app_commands.command(name="swipe", description="Start swiping and find a random chat partner")
+    async def swipe(self, interaction: discord.Interaction):
         """SWIPE COMMAND"""
         self.already_swiped = []
         self.match = ""
         self.match_id = ""
-        data = await self.bot.db.find_one({"_id": str(ctx.author.id)})
+        data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
 
-        if await self.on_swipelimit(data) and not await self.voted(int(ctx.author.id)):
+        if await self.on_swipelimit(data) and not await self.voted(int(interaction.user.id)):
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
             view = View(timeout=None)
             view.add_item(vote_button)
-            return await ctx.author.send(embed=discord.Embed(title="You reached the like limit!", description="Vote to get infinity likes!", color=EMBED_COLOR), view=view)
+            return await interaction.response.send_message(embed=discord.Embed(title="You reached the like limit!", description="Vote to get infinity likes!", color=EMBED_COLOR), view=view, ephemeral=True)
 
-        self.chat_partner_id = await self.load_chatpartner(ctx.author)
+        self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
         self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
         while self.chat_partner is None:
-            self.chat_partner_id = await self.load_chatpartner(ctx.author)
+            self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
         embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
 
         async def info_button_interaction(interacion):
             embed = await self.create_profile_embed(self.match, self.match_id)
-            await interacion.response.send_message(embed=embed)
+            await interacion.response.send_message(embed=embed, ephemeral=True)
 
         async def like_button_interaction(interaction):
-            if await self.is_match(str(ctx.author.id), self.chat_partner_id):
+            if await self.is_match(str(interaction.user.id), self.chat_partner_id):
                 self.match = self.chat_partner
                 self.match_id = self.chat_partner_id
                 info_button = Button(label="Info", style=discord.ButtonStyle.grey, emoji="ℹ️")
                 info_button.callback = info_button_interaction
                 view = View()
                 view.add_item(info_button)
-                await ctx.author.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
+                await interaction.response.send_message(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
                 try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{ctx.author.name}#{ctx.author.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
+                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{interaction.user.name}#{interaction.user.discriminator}`\n""➡️ Add your match and start chatting!", color=0x67ff90), view=view)
                 except:
-                    await ctx.author.send(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR))
+                    await interaction.response.send_message(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR), ephemeral=True)
             
-            await self.add_to_likedby(str(ctx.author.id), self.chat_partner_id)
-            await self.add_to_likeduser(str(ctx.author.id), self.chat_partner_id)
+            await self.add_to_likedby(str(interaction.user.id), self.chat_partner_id)
+            await self.add_to_likeduser(str(interaction.user.id), self.chat_partner_id)
 
-            self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
+            self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
             while self.chat_partner is None:
-                self.chat_partner_id = await self.load_chatpartner(ctx.author)
+                self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
             embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
@@ -180,13 +181,13 @@ class Swipe(commands.Cog):
 
 
         async def dislike_button_interaction(interaction):
-            await self.add_to_disliked(str(ctx.author.id), self.chat_partner_id)
+            await self.add_to_disliked(str(interaction.user.id), self.chat_partner_id)
             try:
-                self.chat_partner_id = await self.load_chatpartner(ctx.author, msg=msg)
+                self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
                 while self.chat_partner is None:
-                    self.chat_partner_id = await self.load_chatpartner(ctx.author)
+                    self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                     self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
 
                 embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
@@ -197,10 +198,10 @@ class Swipe(commands.Cog):
                 dislike_button.disabled = True
             
         async def cancel_button_interaction(interaction):
-            await msg.delete()
+            await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
 
         like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️") 
-        dislike_button = Button(label="Nah", style=discord.ButtonStyle.red, emoji="💤") # TODO error handler -> on_timeout -> delete message
+        dislike_button = Button(label="Nah", style=discord.ButtonStyle.red, emoji="💤") # TODO error handler -> on_timeout -> await interaction.delete_original_message() message
         cancel_button = Button(label="Cancel", style=discord.ButtonStyle.grey, emoji="❌")
         like_button.callback = like_button_interaction
         dislike_button.callback = dislike_button_interaction
@@ -210,7 +211,7 @@ class Swipe(commands.Cog):
         view.add_item(like_button)
         view.add_item(dislike_button)
         view.add_item(cancel_button)
-        msg = await ctx.author.send(embed=embed, view=view)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Swipe(bot))
