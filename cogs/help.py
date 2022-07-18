@@ -13,7 +13,7 @@ class Help(commands.Cog):
         """HELP COMMAND"""
         embed = discord.Embed(title="WannaChat - Help", description="Swipe to find random chat partners!\nSlide in my DMs to use me 🏄\n<> are required arguments, you DONT need to type `<>`!", color=EMBED_COLOR)
         embed.add_field(name="How to start:", value=f"1. Login with `{PREFIX}login`\n"
-        f"2. Update your profile with `{PREFIX}profile <category>`\n"
+        f"2. Update your profile (see command list)\n"
         f"3. Start swiping and find your chatpartner with `{PREFIX}swipe`!\n"
         f"4. Have fun and start chatting! 🔥\n",
         inline=False)
@@ -21,11 +21,11 @@ class Help(commands.Cog):
         f"`{PREFIX}logout`: Delete your account\n"
         f"`{PREFIX}profile`: View your profile\n"
         f"`{PREFIX}age <age>`: Set your age\n"
-        f"`{PREFIX}language`: View your current languages\n"
+        f"`{PREFIX}language view`: View your current languages\n"
         f"`{PREFIX}language add <language>`: Set your language\n"
         f"`{PREFIX}language remove <language>`: Remove a language\n"
         f"`{PREFIX}gender <gender>`: Set your gender\n"
-        f"`{PREFIX}interests`: View your current interests\n"
+        f"`{PREFIX}interests view`: View your current interests\n"
         f"`{PREFIX}interests add <interest>`: Set your interest\n"
         f"`{PREFIX}interests remove <interest>`: Remove interest\n"
         f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
