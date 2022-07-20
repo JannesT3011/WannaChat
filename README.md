@@ -18,23 +18,25 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 4. Have fun and start chatting! 🔥
 
 ### Commands
-- wc.login: Create an account
-- wc.logout: Delete your account
-- wc.profile: View your profile
-- wc.age : Set your age
-- wc.language add <language>: Add language
-- wc.language remove <language>: Remove language
-- wc.gender : Set your gender
-- wc.interests add <interest>: Add interest
-- wc.interests remove <interest>: Remove interest
-- wc.aboutme <aboutme_text>: Set your AboutMe text
-- wc.bug : Report a bug
-- wc.suggestions : Submit new feature suggestion
-
-- wc.likedby: See the users who liked you
-- wc.reset: Reset your likes and dislikes
-- wc.reset likes: Reset your likes
-- wc.reset dislikes: Reset your dislikes
+- /login: Create an account
+- /logout: Delete your account
+- /profile: View your profile
+- /age : Set your age
+- /language add <language>: Add language
+- /language remove <language>: Remove language
+- /gender : Set your gender
+- /interests add <interest>: Add interest
+- /interests remove <interest>: Remove interest
+- /aboutme <aboutme_text>: Set your AboutMe text
+- /bug : Report a bug
+- /suggestions : Submit new feature suggestion
+- /likedby: See the users who liked you
+- /reset: Reset your likes and dislikes
+- /reset likes: Reset your likes
+- /reset dislikes: Reset your dislikes
+##### Owner:
+- /stats: See the users and guild
+- wc.sync: Sync all slash commands
 
 ### Config
 The config.py should look like this:
@@ -83,3 +85,5 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [ ] meme (link from reddit or other trustful memes sites)
 - [ ] random command > returns random user who liked you!
 - [ ] Business contacts
+- [ ] Filter (age/gender)
+- [ ] server feature (random chatpartner only on server?)
