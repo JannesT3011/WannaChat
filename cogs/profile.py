@@ -44,6 +44,24 @@ class InterestSelectView(discord.ui.View):
         self.add_item(InterestSelect(author=author, bot=bot, interests=interests))
 
 
+class LanguageSelect(discord.ui.Select):
+    def __init__(self, author: discord.User, bot, language:list):
+        self.author = author
+        self.bot = bot
+        options = [discord.SelectOption(label=language) for language in language]
+        super().__init__(placeholder="Select the language you like to remove", max_values=1, min_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+       await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$pull": {"language": self.values[0]}})
+           
+       return await interaction.response.send_message(embed=discord.Embed(title=f"Language removed: {self.values[0]}", color=EMBED_COLOR), ephemeral=True)
+
+class LanguageSelectView(discord.ui.View):
+    def __init__(self, *, author:discord.User, bot, language:list, timeout = None):
+        super().__init__(timeout=timeout)
+        self.add_item(LanguageSelect(author=author, bot=bot, language=language))
+
+
 class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -121,22 +139,11 @@ class Profile(commands.Cog):
         
     #@is_registered()
     @language_group.command(name="remove", description="Remove a language")
-    async def language_delete(self, interaction: discord.Interaction, language:str):
+    async def language_delete(self, interaction: discord.Interaction):
         if await registered(self.bot, interaction.user):
-            if language in self.bot.blacklist:
-                return await interaction.response.send_message("Uh, dont use that word! 😞", ephemeral=True)
-                
-            data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
-            
-            if language not in data["language"]:
-                return await interaction.response.send_message(embed=discord.Embed(title=f"Language removed: {language}", color=EMBED_COLOR), ephemeral=True)
-            
-            if len(data["language"]) == 1:
-                return await interaction.response.send_message("You need at least one language!")
-            await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$pull": {"language": language.lower()}})
+            languages = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+            return await interaction.response.send_message(view=LanguageSelectView(author=interaction.user, bot=self.bot, language=languages["language"]), ephemeral=True)
 
-            return await interaction.response.send_message(f"{language} successfully removed!", ephemeral=True)
-        
     #@is_registered()
     @app_commands.command(name="aboutme", description="Set your AboutMe description")
     async def profile_aboutme(self, interaction: discord.Interaction, *, aboutme:str):
