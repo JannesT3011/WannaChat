@@ -20,11 +20,29 @@ class GenderSelect(discord.ui.Select):
             
         return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR), ephemeral=True)
 
-
 class SelectView(discord.ui.View):
     def __init__(self, *, author:discord.User, bot, timeout = None):
         super().__init__(timeout=timeout)
         self.add_item(GenderSelect(author=author, bot=bot))
+
+
+class InterestSelect(discord.ui.Select):
+    def __init__(self, author: discord.User, bot, interests:list):
+        self.author = author
+        self.bot = bot
+        options = [discord.SelectOption(label=interest) for interest in interests]
+        super().__init__(placeholder="Select the interest you like to remove", max_values=1, min_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+       await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$pull": {"interests": self.values[0]}})
+           
+       return await interaction.response.send_message(embed=discord.Embed(title=f"Interest removed: {self.values[0]}", color=EMBED_COLOR), ephemeral=True)
+
+class InterestSelectView(discord.ui.View):
+    def __init__(self, *, author:discord.User, bot, interests:list, timeout = None):
+        super().__init__(timeout=timeout)
+        self.add_item(InterestSelect(author=author, bot=bot, interests=interests))
+
 
 class Profile(commands.Cog):
     def __init__(self, bot):
@@ -170,20 +188,12 @@ class Profile(commands.Cog):
         
     #@is_registered()
     @interest_group.command(name="remove", description="Remove a interest")
-    async def interest_delete(self, interaction: discord.Interaction, *, interests:str):
+    async def interest_delete(self, interaction: discord.Interaction):
         """DELETE A INTEREST"""
         if await registered(self.bot, interaction.user):
-            if interests in self.bot.blacklist:
-                return await interaction.response.send_message("Uh, dont use that word! 😞", ephemeral=True)
-            
-            data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+            interests = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+            return await interaction.response.send_message(view=InterestSelectView(author=interaction.user, bot=self.bot, interests=interests["interests"]), ephemeral=True)
 
-            if interests not in data["interests"]:
-                return await interaction.response.send_message("Cant find that!", ephemeral=True)
-            
-            await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$pull": {"interests": interests}})
-            return await interaction.response.send_message(embed=discord.Embed(title=f"Interest removed: {interests}", color=EMBED_COLOR), ephemeral=True)
-        
     #@is_registered()
     @app_commands.command(name="gender", description="Set your gender")
     async def profile_gender(self, interaction: discord.Interaction):
