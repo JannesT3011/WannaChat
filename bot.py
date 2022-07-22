@@ -62,6 +62,7 @@ class Bot(commands.AutoShardedBot):
                 raise e
     
     async def post_guild_count(self) -> None:
+        """POST GUILD COUNT TO TOPGG"""
         topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
         await topgg_client.post_guild_count(len(self.guilds))
         await topgg_client.close()
