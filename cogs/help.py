@@ -23,11 +23,11 @@ class Help(commands.Cog):
         f"`{PREFIX}age <age>`: Set your age\n"
         f"`{PREFIX}language view`: View your current languages\n"
         f"`{PREFIX}language add <language>`: Set your language\n"
-        f"`{PREFIX}language remove <language>`: Remove a language\n"
+        f"`{PREFIX}language remove`: Remove a language\n"
         f"`{PREFIX}gender <gender>`: Set your gender\n"
         f"`{PREFIX}interests view`: View your current interests\n"
         f"`{PREFIX}interests add <interest>`: Set your interest\n"
-        f"`{PREFIX}interests remove <interest>`: Remove interest\n"
+        f"`{PREFIX}interests remove`: Remove interest\n"
         f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
         embed.add_field(name="Voting benefit commands", value=f"`{PREFIX}likedby`: See the users who liked you\n"
