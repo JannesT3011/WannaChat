@@ -35,7 +35,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.4.1"
+        self.version = "v1.4.2"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
@@ -61,12 +61,15 @@ class Bot(commands.AutoShardedBot):
                 print(f"Cant load {ext}")
                 raise e
     
-    async def on_ready(self):
-        await self.load_cogs()
-
+    async def post_guild_count(self) -> None:
         topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
         await topgg_client.post_guild_count(len(self.guilds))
         await topgg_client.close()
+
+    async def on_ready(self):
+        await self.load_cogs()
+
+        await self.post_guild_count()
 
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
@@ -82,14 +85,10 @@ class Bot(commands.AutoShardedBot):
         await self.process_commands(message)
 
     async def on_guild_join(self, guild):
-        topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
-        await topgg_client.post_guild_count(len(self.guilds))
-        await topgg_client.close()
+        await self.post_guild_count()
 
     async def on_guild_remove(self, guild):
-        topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
-        await topgg_client.post_guild_count(len(self.guilds))
-        await topgg_client.close()
+        await self.post_guild_count()
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
