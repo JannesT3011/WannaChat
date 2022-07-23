@@ -82,7 +82,7 @@ class Profile(commands.Cog):
             if not data["aboutme"] == "":
                 embed.add_field(name="About me", value=data["aboutme"], inline=False)
             embed.set_thumbnail(url=interaction.user.display_avatar.url)
-            embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX}profile <category>")
+            embed.set_footer(text=f"Set your age, language, gender, interests and about me with {PREFIX} <category>")
 
             return await interaction.response.send_message(embed=embed, view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
         
