@@ -35,7 +35,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.4.3"
+        self.version = "v1.4.4"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.db = DbClient().collection
@@ -69,7 +69,6 @@ class Bot(commands.AutoShardedBot):
 
     async def on_ready(self):
         await self.load_cogs()
-
         await self.post_guild_count()
 
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
