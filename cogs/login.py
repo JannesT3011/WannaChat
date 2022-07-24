@@ -20,7 +20,10 @@ class Login(commands.Cog):
             return await interaction.response.send_message(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
 
-        return await interaction.response.send_message(embed=discord.Embed(title="Login successful!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:", color=EMBED_COLOR), view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
+        return await interaction.response.send_message(embed=discord.Embed(title="Login successful!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:", color=EMBED_COLOR)
+        .add_field(name="Your next steps:", value=f"1. Set your age with `{PREFIX}age`\n2. Add languages with `{PREFIX}language add`\n3. Add your interests with `{PREFIX}interest add`\n4. Set your AboutMe text with `{PREFIX}aboutme`"),
+        view=SelectView(author=interaction.user, bot=self.bot),
+        ephemeral=True)
     
     @app_commands.command(name="logoff", description="Delete your account")
     async def logoff(self, interaction:discord.Interaction):
