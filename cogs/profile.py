@@ -84,7 +84,21 @@ class Profile(commands.Cog):
             embed.set_thumbnail(url=interaction.user.display_avatar.url)
             embed.set_footer(text=f"See how you modify your profile with {PREFIX}help")
 
-            return await interaction.response.send_message(embed=embed, view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
+            await interaction.response.send_message(embed=embed, view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
+            
+            embed = discord.Embed(title="Complete your profile:", color=EMBED_COLOR)
+            if data["gender"] == "-":
+                embed.add_field(name="❌ Add your gender:", value=f"`{PREFIX}gender`", inline=False)
+            if data["age"] == "-":
+                embed.add_field(name="❌ Add your age:", value=f"`{PREFIX}age`", inline=False)
+            if len(data["interests"]) == 0:
+                embed.add_field(name="❌ Add some interests:", value=f"`{PREFIX}interests add`", inline=False)
+            if data["aboutme"] == "":
+                embed.add_field(name="❌ Write something about yourself:", value=f"`{PREFIX}aboutme`", inline=False)
+            if len(embed.fields) == 0:
+                return
+
+            return await interaction.user.send(embed=embed)
         
     #@is_registered()
     @app_commands.command(name="age", description="Set your age")
