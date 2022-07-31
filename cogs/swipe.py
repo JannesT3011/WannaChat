@@ -33,6 +33,11 @@ class Swipe(commands.Cog):
         if not str(likedbyid) in data["liked_by"]:
             await self.bot.db.update_many({"_id": str(userid)}, {"$push": {"liked_by": str(likedbyid)}})
 
+    async def submit_report(self, authorid, userid):
+        return
+    
+    async def needs_to_delete() -> bool:
+        return
 
     async def load_chatpartner(self, author, interaction: discord.Interaction):
         """LOAD A NEW CHATPARTNER"""
@@ -212,7 +217,23 @@ class Swipe(commands.Cog):
             view.add_item(like_button)
             view.add_item(dislike_button)
             view.add_item(cancel_button)
+
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+            author_data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+            embed = discord.Embed(title="Please complete your profile:", color=EMBED_COLOR)
+            if author_data["gender"] == "-":
+                embed.add_field(name="❌ Add your gender:", value=f"`{PREFIX}gender`", inline=False)
+            if author_data["age"] == "-":
+                embed.add_field(name="❌ Add your age:", value=f"`{PREFIX}age`", inline=False)
+            if len(author_data["interests"]) == 0:
+                embed.add_field(name="❌ Add some interests:", value=f"`{PREFIX}interests add`", inline=False)
+            if author_data["aboutme"] == "":
+                embed.add_field(name="❌ Write something about yourself:", value=f"`{PREFIX}aboutme`", inline=False)
+            if len(embed.fields) == 0:
+                return
+
+            await interaction.user.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Swipe(bot))
