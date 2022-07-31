@@ -129,6 +129,10 @@ class Bot(commands.AutoShardedBot):
         elif isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
         
+        elif isinstance(error, discord.app_commands.errors):
+            channel = self.get_channel(992779863855476826)
+            return await channel.send(embed=ErrorEmbed(f"```{error}```"))
+
         else:
             channel = self.get_channel(992779863855476826)
             return await channel.send(embed=ErrorEmbed(f"```{error}```"))
