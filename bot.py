@@ -19,6 +19,7 @@ COGS = [
     "cogs.support.support",
     "cogs.owner.owner",
     "cogs.owner.sync",
+    "cogs.owner.delete_user",
 
     "events.guild_join_login",
     "cogs.benefits.likedby",
