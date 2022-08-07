@@ -64,13 +64,14 @@ Any other data, liked you age etc. will be provided by yourself.
 
 ### Privacy Policy:
 The data (means: the data you provide by yourself, such as your age) will only be available for you and other users, using this bot! 
+If you use the GlobalChat function, your message content (you send in the GlobalChat) will be shared on other server using the same function.
 
 
 ### TODOs
 - [ ] valid language
 - [X] bug command (submit bug to owner/support server)
 - [X] suggestion/idea (submit idea to owner/support server)
-- [ ] Premium: See who liked you! (direct match with them!) ()
+- [X] Premium: See who liked you! (direct match with them!) ()
 - [X] Vote benefit > limit likes (50) if not voted!
 - [X] Vote log for server (give server role)
 - [ ] on_timeout
@@ -87,3 +88,9 @@ The data (means: the data you provide by yourself, such as your age) will only b
 - [ ] Business contacts
 - [ ] Filter (age/gender)
 - [ ] server feature (random chatpartner only on server?)
+- [ ] ask for age, interests, language (...) after login
+- [ ] global chat
+- [ ] global polls
+- [ ] global job portal
+- [ ] customize profile with own emojis and other stuff (premium)
+- [ ] global search for gaming partners
