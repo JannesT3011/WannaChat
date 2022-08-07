@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from config import EMBED_COLOR
 
 class GlobalChat(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +24,7 @@ class GlobalChat(commands.Cog):
         except discord.errors.Forbidden:
             pass
 
-        return await interaction.response.send_message(embed=discord.Embed(title="Channel successfully set!"))
+        return await interaction.response.send_message(embed=discord.Embed(title="This channel is now the GlobalChat channel!", description="You can now send messages to other servers or receive messages from them!", color=EMBED_COLOR))
 
 
     @commands.has_permissions(administrator=True)
@@ -35,7 +36,7 @@ class GlobalChat(commands.Cog):
         except:
             return await interaction.response.send_message("No channel set, yet!")
 
-        return await interaction.response.send_message(embed=discord.Embed(title="Channel successfully removed!"))
+        return await interaction.response.send_message(embed=discord.Embed(title="GlobalChat deactivated!"))
     
     @commands.Cog.listener()
     async def on_message(self, message):
