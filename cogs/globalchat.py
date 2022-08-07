@@ -14,11 +14,14 @@ class GlobalChat(commands.Cog):
     @globalchat_group.command(name="activate", description="Activate the GlobalChat in this channel")
     async def activate(self, interaction:discord.Interaction):
         """ACTIVATE GLOBAL CHAT IN CHANNEL"""
-        try:
-            await self.bot.gcserversdb.update_many({"_id": "servers"}, {"$push": {"channels": interaction.channel.id}})
-        except:
+
+        globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
+
+        if interaction.channel.id in globalchat_channels["channels"]:
             return await interaction.response.send_message("Channel already set!")
         
+        await self.bot.gcserversdb.update_many({"_id": "servers"}, {"$push": {"channels": interaction.channel.id}})
+
         try:
             await interaction.channel.edit(topic="🌐💬 WannaChat Global chat, write message to different people all arount the world!", slowmode_delay=5)
         except discord.errors.Forbidden:
