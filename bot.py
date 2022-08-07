@@ -15,6 +15,7 @@ COGS = [
     "cogs.profile",
     "cogs.login",
     "cogs.swipe",
+    "cogs.globalchat",
 
     "cogs.support.support",
     "cogs.owner.owner",
@@ -28,7 +29,7 @@ COGS = [
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
-        intents = discord.Intents.default()
+        intents = discord.Intents.all()
         super(Bot, self).__init__(
             command_prefix="wc.",
             description="Chat with someone random!",
@@ -39,8 +40,11 @@ class Bot(commands.AutoShardedBot):
         self.version = "v1.4.6"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
+
         self.db = DbClient().collection
         self.queuedb = DbClient().queuecollection
+        self.gcserversdb = DbClient().gcserverscollection
+
         self.blacklist = self.load_blacklist()
         
         self.remove_command("bot")
@@ -78,11 +82,13 @@ class Bot(commands.AutoShardedBot):
         """IGNORE BOT MESSAGES"""
         if message.author.bot:
             return
-        if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help"):
+        
+        if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help") :
             try:
                 return await message.author.send("Use me here, daddy!")
             except:
                 return await message.send("Use me in my DMs, daddy!", delete_after=5)
+
         await self.process_commands(message)
 
     async def on_guild_join(self, guild):
