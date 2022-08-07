@@ -29,7 +29,8 @@ COGS = [
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
-        intents = discord.Intents.all()
+        intents = discord.Intents.default()
+        intents.message_content = True
         super(Bot, self).__init__(
             command_prefix="wc.",
             description="Chat with someone random!",
