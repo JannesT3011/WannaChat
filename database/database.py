@@ -1,6 +1,6 @@
 import motor.motor_asyncio as motor
 from datetime import datetime
-from config import CONNECTION, CLUSTER, DB, QUEUEDB
+from config import CONNECTION, CLUSTER, DB, QUEUEDB, GCSERVERDB
 
 class DbClient:
     """CREATES A CONNECTION TO YOUR DATABASE"""
@@ -9,6 +9,7 @@ class DbClient:
         db = cluster[CLUSTER]
         self.collection = db[DB]
         self.queuecollection = db[QUEUEDB]
+        self.gcserverscollection = db[GCSERVERDB]
 
     def __call__(self, *args, **kwargs):
         return self.collection
