@@ -39,8 +39,9 @@ class Owner(commands.Cog):
     async def stats(self, ctx):
         """SHOW USERS AND SERVERS IN ONE MESSAGE"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
+        gc_data = await self.bot.gcserversdb.find_one({"_id": "servers"})
 
-        return await ctx.author.send(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}", timestamp=ctx.message.created_at))
+        return await ctx.author.send(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n**GC Channels:**{len(gc_data['channels'])}", timestamp=ctx.message.created_at))
 
 async def setup(bot):
     await bot.add_cog(Owner(bot))
