@@ -61,7 +61,7 @@ class GlobalChat(commands.Cog):
                 try:
                     #embed.set_footer(text=f"{self.version} • made with ❤️ by {self.creator}", icon_url=self.user.display_avatar.url)
                     return await c.send(embed=embed)
-                except discord.errors.Forbidden:
+                except:
                     continue
 
 async def setup(bot):
