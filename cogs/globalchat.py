@@ -55,10 +55,10 @@ class GlobalChat(commands.Cog):
             globalchat_channels["channels"].remove(message.channel.id)
 
             for channel in globalchat_channels["channels"]:
-                c = await self.bot.fetch_channel(channel)
-                embed = discord.Embed(title=message.author.name, description=message.content, timestamp=message.created_at)
-                embed.set_thumbnail(url=message.author.display_avatar.url)
                 try:
+                    c = await self.bot.fetch_channel(channel)
+                    embed = discord.Embed(title=message.author.name, description=message.content, timestamp=message.created_at)
+                    embed.set_thumbnail(url=message.author.display_avatar.url)
                     embed.set_footer(text=f"{self.version} • made with ❤️ by {self.creator}", icon_url=self.user.display_avatar.url)
                     await c.send(embed=embed)
                 except:
