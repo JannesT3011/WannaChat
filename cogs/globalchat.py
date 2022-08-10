@@ -60,7 +60,7 @@ class GlobalChat(commands.Cog):
                 embed.set_thumbnail(url=message.author.display_avatar.url)
                 try:
                     #embed.set_footer(text=f"{self.version} • made with ❤️ by {self.creator}", icon_url=self.user.display_avatar.url)
-                    return await c.send(embed=embed)
+                    await c.send(embed=embed)
                 except:
                     continue
 
