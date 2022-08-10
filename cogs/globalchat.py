@@ -40,7 +40,7 @@ class GlobalChat(commands.Cog):
             return await interaction.response.send_message("No channel set, yet!")
 
         return await interaction.response.send_message(embed=discord.Embed(title="GlobalChat deactivated!"))
-    
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
@@ -59,7 +59,7 @@ class GlobalChat(commands.Cog):
                     c = await self.bot.fetch_channel(channel)
                     embed = discord.Embed(title=message.author.name, description=message.content, timestamp=message.created_at)
                     embed.set_thumbnail(url=message.author.display_avatar.url)
-                    embed.set_footer(text=f"{self.version} • made with ❤️ by {self.creator}", icon_url=self.user.display_avatar.url)
+                    #embed.set_footer(icon_url=self.bot.user.display_avatar.url)
                     await c.send(embed=embed)
                 except:
                     continue
