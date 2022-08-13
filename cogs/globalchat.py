@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from config import EMBED_COLOR
+from better_profanity import profanity
 
 class GlobalChat(commands.Cog):
     def __init__(self, bot):
@@ -41,12 +42,17 @@ class GlobalChat(commands.Cog):
 
         return await interaction.response.send_message(embed=discord.Embed(title="GlobalChat deactivated!"))
     
+    @globalchat_group.command(name="color", description="Set your GlobalChat color")
+    async def color(self, interaction:discord.Interaction, color:str):
+        return
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
+        #globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
+        globalchat_channels = {"channels": [1000322624741703690, 566351183531343882]}
 
         if message.channel.id in globalchat_channels["channels"]:
             if any(word in message.content for word in self.bot.blacklist):
@@ -57,7 +63,7 @@ class GlobalChat(commands.Cog):
             for channel in globalchat_channels["channels"]:
                 try:
                     c = await self.bot.fetch_channel(channel)
-                    embed = discord.Embed(title=message.author.name, description=message.content, timestamp=message.created_at, color=message.author.color)
+                    embed = discord.Embed(title=message.author.name, description=profanity.censor(message.content), timestamp=message.created_at, color=message.author.color)
                     embed.set_thumbnail(url=message.author.display_avatar.url)
                     #embed.set_footer(icon_url=self.bot.user.display_avatar.url)
                     await c.send(embed=embed)
