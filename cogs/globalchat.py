@@ -51,8 +51,7 @@ class GlobalChat(commands.Cog):
         if message.author.bot:
             return
 
-        #globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
-        globalchat_channels = {"channels": [1000322624741703690, 566351183531343882]}
+        globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
 
         if message.channel.id in globalchat_channels["channels"]:
             if any(word in message.content for word in self.bot.blacklist):
