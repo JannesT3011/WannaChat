@@ -43,5 +43,14 @@ class Owner(commands.Cog):
 
         return await ctx.author.send(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n**GC Channels:**{len(gc_data['channels'])}", timestamp=ctx.message.created_at))
 
+    @commands.is_owner()
+    @commands.command(name="gcban")
+    async def gcban(self, ctx, user:int):
+        await self.bot.gcserversdb.update_many({"_id": "servers"}, {"$push": {"blacklist": user}})
+
+        user = await self.bot.fetch_user(user)
+
+        return await ctx.author.send(embed=discord.Embed(title=f"{user.name} banned!"))
+
 async def setup(bot):
     await bot.add_cog(Owner(bot))

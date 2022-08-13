@@ -51,14 +51,16 @@ class GlobalChat(commands.Cog):
         if message.author.bot:
             return
 
-        globalchat_channels = await self.bot.gcserversdb.find_one({"_id": "servers"})
+        globalchat_data = await self.bot.gcserversdb.find_one({"_id": "servers"})
         #globalchat_channels = {"channels": [1000322624741703690, 566351183531343882]}
 
-        if message.channel.id in globalchat_channels["channels"]:
+        if message.channel.id in globalchat_data["channels"]:
+            if message.author.id in globalchat_data["blacklist"]:
+                return await message.author.send("You were banned from the GlobalChat!")
 
-            globalchat_channels["channels"].remove(message.channel.id)
+            globalchat_data["channels"].remove(message.channel.id)
 
-            for channel in globalchat_channels["channels"]:
+            for channel in globalchat_data["channels"]:
                 try:
                     c = await self.bot.fetch_channel(channel)
                     embed = discord.Embed(title=message.author.name, description=profanity.censor(message.content), timestamp=message.created_at, color=message.author.color)
