@@ -48,7 +48,21 @@ class Owner(commands.Cog):
     async def gcban(self, ctx, user:int):
         await self.bot.gcserversdb.update_many({"_id": "servers"}, {"$push": {"blacklist": user}})
 
-        user = await self.bot.fetch_user(user)
+        try:
+            user = await self.bot.fetch_user(user)
+        except:
+            return await ctx.send(embed=discord.Embed(title=f"{user} banned!"))
+
+        globalchat_data = await self.bot.gcserversdb.find_one({"_id": "servers"})
+
+        for channel in globalchat_data["channels"]:
+            try:
+                c = await self.bot.fetch_channel(channel)
+                embed = discord.Embed(title=f"{user.name} banned!")
+                embed.set_thumbnail(url=user.display_avatar.url)
+                await c.send(embed=embed)
+            except:
+                continue
 
         return await ctx.author.send(embed=discord.Embed(title=f"{user.name} banned!"))
 
