@@ -29,17 +29,17 @@ class SelectView(discord.ui.View):
         self.add_item(GenderSelect(author=author, bot=bot))
 
 
-class NotRegistered(commands.CheckFailure):
+class NotRegistered(discord.app_commands.CheckFailure):
     pass
 
 def is_registered():
-    async def predicate(ctx):
-        data = await ctx.bot.db.find_one({"_id": str(ctx.author.id)})
+    async def predicate(interaction: discord.Interaction):
+        data = await interaction.client.db.find_one({"_id": str(interaction.user.id)})
         if data is None:
             raise NotRegistered
         return True
 
-    return commands.check(predicate)
+    return discord.app_commands.check(predicate)
 
 async def registered(bot, user) -> bool:
     data = await bot.db.find_one({"_id": str(user.id)})
