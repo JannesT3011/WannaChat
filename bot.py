@@ -41,6 +41,7 @@ class Bot(commands.AutoShardedBot):
         self.version = "v1.5.2"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
+        self.test_guild = discord.Object(364335676549890048)
 
         self.db = DbClient().collection
         self.queuedb = DbClient().queuecollection
@@ -98,45 +99,48 @@ class Bot(commands.AutoShardedBot):
     async def on_guild_remove(self, guild):
         await self.post_guild_count()
 
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.BotMissingPermissions):
-            return await ctx.send(embed=ErrorEmbed(str(error)))
+    async def setup_hook(self) -> None:
+        self.tree.sync()
+        self.tree.on_error = self.on_app_command_error
+
+    async def on_app_command_error(self, interaction: discord.Interaction, error) -> None:
+        if isinstance(error, commands.BotMissingAnyRole):
+              return await interaction.response.send_message(embed=ErrorEmbed(str(error)))
         
-        elif isinstance(error, commands.BotMissingRole):
-            return await ctx.send(embed=ErrorEmbed(str(error)))
-        
-        elif isinstance(error, NotVoted):
+        elif isinstance(error, discord.app_commands.MissingRole):
+            return await interaction.response.send_message(embed=ErrorEmbed(str(error)))
+
+        if isinstance(error, NotVoted):
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.user.id}/vote")
             view = View(timeout=None)
             view.add_item(vote_button)
-            return await ctx.author.send(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote", color=EMBED_COLOR), view=view)
-
+            return await interaction.response.send_message(embed=discord.Embed(title="Please vote first to use this command!", url=f"https://top.gg/bot/{self.user.id}/vote", color=EMBED_COLOR), view=view)  
+        
         elif isinstance(error, NotRegistered):
             embed = discord.Embed(title="You are not registered! 😔", description=f"Press the button to join the network and find new friends 🧑!\nTo see all commands use `{PREFIX}help`.", color=EMBED_COLOR)
             view = View(timeout=None)
-            login_button = Button(label="Login", emoji="💬", style=discord.ButtonStyle.blurple)
-
+            login_button = Button(label="Login", emoji="💬", style=discord.ButtonStyle.blurple) 
             async def login_button_interaction(interaction):
                 try:
                     await Database().init_db(str(interaction.user.id))
                 except:
                     return await interaction.user.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self.bot)) # TODO buttons with profile options
                 await self.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
-                await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=self.bot))
+                await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=self.bot))  
+                login_button.callback = login_button_interaction
+                view.add_item(login_button)
 
-            login_button.callback = login_button_interaction
-            view.add_item(login_button)
-            return await ctx.author.send(embed=embed, view=view)
+                return await interaction.response.send_message(embed=embed, view=view, ephemeral=True)   
 
-        elif isinstance(error, commands.CheckFailure):
-            return await ctx.send(embed=ErrorEmbed(str(error)))
+        elif isinstance(error, discord.app_commands.CheckFailure):
+            return await interaction.response.send_message(embed=ErrorEmbed(str(error))) 
 
-        elif isinstance(error, commands.CommandNotFound):
-            return await ctx.send(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
-        
-        elif isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
-        
+        elif isinstance(error, discord.app_commands.CommandNotFound):
+            return await interaction.response.send_message(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
+
+        elif isinstance(error, discord.app_commands.CommandOnCooldown):
+            return await interaction.response.send_message(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
+
         elif isinstance(error, discord.app_commands.errors):
             channel = self.get_channel(992779863855476826)
             return await channel.send(embed=ErrorEmbed(f"```{error}```"))
