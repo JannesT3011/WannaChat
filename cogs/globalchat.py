@@ -69,7 +69,7 @@ class GlobalChat(commands.Cog):
                     embed.set_thumbnail(url=message.author.display_avatar.url)
                     #embed.set_footer(icon_url=self.bot.user.display_avatar.url)
                     await c.send(embed=embed)
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.125)
                 except:
                     continue
 
