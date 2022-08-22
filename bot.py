@@ -9,6 +9,7 @@ from checks.voted import NotVoted
 from checks.registered import NotRegistered
 from discord.ui import Button, View
 import topgg
+from cogs.profile import SelectView
 
 COGS = [
     "cogs.help",
@@ -99,9 +100,14 @@ class Bot(commands.AutoShardedBot):
     async def on_guild_remove(self, guild):
         await self.post_guild_count()
 
+    async def startup(self):
+        await self.wait_until_ready()
+        await self.tree.sync()
+
     async def setup_hook(self) -> None:
-        self.tree.sync()
         self.tree.on_error = self.on_app_command_error
+
+        self.loop.create_task(self.startup())
 
     async def on_app_command_error(self, interaction: discord.Interaction, error) -> None:
         if isinstance(error, commands.BotMissingAnyRole):
@@ -120,17 +126,19 @@ class Bot(commands.AutoShardedBot):
             embed = discord.Embed(title="You are not registered! 😔", description=f"Press the button to join the network and find new friends 🧑!\nTo see all commands use `{PREFIX}help`.", color=EMBED_COLOR)
             view = View(timeout=None)
             login_button = Button(label="Login", emoji="💬", style=discord.ButtonStyle.blurple) 
+
             async def login_button_interaction(interaction):
                 try:
                     await Database().init_db(str(interaction.user.id))
                 except:
-                    return await interaction.user.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self.bot)) # TODO buttons with profile options
+                    return await interaction.user.send(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infors\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self)) # TODO buttons with profile options
                 await self.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
-                await interaction.user.send(embed=discord.Embed(title="Login successful!", description="Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=self.bot))  
-                login_button.callback = login_button_interaction
-                view.add_item(login_button)
+                await interaction.user.send(embed=discord.Embed(title="Login successful!", description=f"Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=self))  
+            
+            login_button.callback = login_button_interaction
+            view.add_item(login_button)
 
-                return await interaction.response.send_message(embed=embed, view=view, ephemeral=True)   
+            return await interaction.response.send_message(embed=embed, view=view, ephemeral=True)   
 
         elif isinstance(error, discord.app_commands.CheckFailure):
             return await interaction.response.send_message(embed=ErrorEmbed(str(error))) 
@@ -148,6 +156,7 @@ class Bot(commands.AutoShardedBot):
         else:
             channel = self.get_channel(992779863855476826)
             return await channel.send(embed=ErrorEmbed(f"```{error}```"))
+    
 
 bot = Bot()
 

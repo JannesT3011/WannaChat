@@ -17,10 +17,10 @@ class Reset(commands.Cog):
 
     reset_group = app_commands.Group(name="reset", description="Reset your likes or dislikes")
 
-    #@is_registered()
-    #@is_voter()
-    @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset_group.command(name="all", description="Reset likes and dislikes")
+    @is_registered()
+    @is_voter()
+    @app_commands.checks.cooldown(1, 180.0, key=lambda i: (i.guild_id, i.user.id))
     async def reset(self, interaction: discord.Interaction):
         """RESET YOUR LIKES AND DISLIKES"""
         if await registered(self.bot, interaction.user) and await voted(self.bot, interaction.user):
@@ -43,10 +43,10 @@ class Reset(commands.Cog):
 
             await interaction.response.send_message(embed=discord.Embed(title="Are you sure you want to reset your liked and disliked users?", color=EMBED_COLOR), view=view, ephemeral=True)
 
-    #@is_registered()
-    #@is_voter()
-    @commands.cooldown(1, 180.0, commands.BucketType.user)
     @reset_group.command(name="likes", description="Reset your likes")
+    @is_registered()
+    @is_voter()
+    @app_commands.checks.cooldown(1, 180.0, key=lambda i: (i.guild_id, i.user.id))
     async def reset_likes(self, interaction: discord.Interaction):
         """RESET YOUR LIKES"""
         if await registered(self.bot, interaction.user) and await voted(self.bot, interaction.user):

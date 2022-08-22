@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 from config import EMBED_COLOR
 from better_profanity import profanity
+from database.database import Database
+import asyncio
 
 class GlobalChat(commands.Cog):
     def __init__(self, bot):
@@ -10,9 +12,9 @@ class GlobalChat(commands.Cog):
 
     globalchat_group = app_commands.Group(name="globalchat", description="Start the global chat")
 
-    @commands.bot_has_permissions(manage_guild=True)
-    @commands.has_permissions(administrator=True)
     @globalchat_group.command(name="activate", description="Activate the GlobalChat in this channel")
+    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.bot_has_permissions(manage_guild=True)
     async def activate(self, interaction:discord.Interaction):
         """ACTIVATE GLOBAL CHAT IN CHANNEL"""
 
@@ -31,8 +33,8 @@ class GlobalChat(commands.Cog):
         return await interaction.response.send_message(embed=discord.Embed(title="This channel is now the GlobalChat channel!", description="You can now send messages to other servers or receive messages from them!", color=EMBED_COLOR))
 
 
-    @commands.has_permissions(administrator=True)
     @globalchat_group.command(name="deactivate", description="Deactivate the GlobalChat in this channel")
+    @app_commands.checks.has_permissions(administrator=True)
     async def deactivate(self, interaction:discord.Interaction):
         """DEACTIVATE GLOABL CHAT IN CHANNEL"""
         try:
@@ -41,13 +43,9 @@ class GlobalChat(commands.Cog):
             return await interaction.response.send_message("No channel set, yet!")
 
         return await interaction.response.send_message(embed=discord.Embed(title="GlobalChat deactivated!"))
-    
-    @globalchat_group.command(name="color", description="Set your GlobalChat color")
-    async def color(self, interaction:discord.Interaction, color:str):
-        return
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message): # TODO zu user db hinzufügen, wenn eine Message hinzugefügt wurde!
         if message.author.bot:
             return
 
@@ -55,6 +53,10 @@ class GlobalChat(commands.Cog):
         #globalchat_channels = {"channels": [1000322624741703690, 566351183531343882]}
 
         if message.channel.id in globalchat_data["channels"]:
+            try:
+                await Database().init_db(str(message.author.id))
+            except:
+                pass
             if message.author.id in globalchat_data["blacklist"]:
                 return await message.author.send("You were banned from the GlobalChat!")
 
@@ -67,6 +69,7 @@ class GlobalChat(commands.Cog):
                     embed.set_thumbnail(url=message.author.display_avatar.url)
                     #embed.set_footer(icon_url=self.bot.user.display_avatar.url)
                     await c.send(embed=embed)
+                    await asyncio.sleep(0.1)
                 except:
                     continue
 

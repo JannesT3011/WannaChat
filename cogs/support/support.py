@@ -6,8 +6,8 @@ class Support(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.cooldown(1, 60.0, commands.BucketType.user)
     @app_commands.command(name="bug", description="Report a bug")
+    @app_commands.checks.cooldown(1, 60.0, key=lambda i: (i.guild_id, i.user.id))
     async def bug_report(self, interaction: discord.Interaction, *, bug:str):
         """REPORT A BUG"""
         if any(word in bug for word in self.bot.blacklist):
@@ -18,8 +18,8 @@ class Support(commands.Cog):
         
         return await interaction.response.send_message("Bug reported! Thank you!!")
     
-    @commands.cooldown(1, 60.0, commands.BucketType.user)
     @app_commands.command(name="suggestion", description="Suggest an idea")
+    @app_commands.checks.cooldown(1, 60.0, key=lambda i: (i.guild_id, i.user.id))
     async def suggestion(self, interaction: discord.Interaction, *, idea:str):
         """SUBMIT A SUGGESTION"""
         if any(word in idea for word in self.bot.blacklist):

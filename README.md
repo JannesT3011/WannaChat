@@ -80,6 +80,7 @@ If you use the GlobalChat function, your message content (you send in the Global
 - [ ] top.gg images for README
 - [X] On Join message with button > Click button to create WannaMeme account! (try, except)
 - [X] error log
+- [ ] process_error
 - [ ] news > github api
 - [ ] AI chat with bot
 - [ ] report
@@ -94,3 +95,12 @@ If you use the GlobalChat function, your message content (you send in the Global
 - [ ] global job portal
 - [ ] customize profile with own emojis and other stuff (premium)
 - [ ] global search for gaming partners
+- [ ] PREMIUM: Send links to Chat (Filter links)
+- [ ] Coins for message? Or some building Game for GlobalChat
+- [ ] Show profile (age on globlachat)
+- [X] GlobalChat Blacklist users
+- [ ] GlobalChat Premium Anonymous mode
+- [ ] Beim schreiben und matchen zufällig Tiere/emojis finden -> werden im Profil angezeigt (Sammlung!) Rarity: List of most used Emojis!
+-> Collect, Trade ...
+- [X] NUR NOCH SLASH COMMANDS (ADMIN COMMANDS NUR FÜR EINEN SERVER!!) BIS 1 SEp
+- [ ] Alle daten in die DB packen, damit man nicht bei kleineren sachen restarten muss
