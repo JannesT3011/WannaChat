@@ -207,14 +207,14 @@ class Profile(commands.Cog):
         """SET YOUR PROFILE GENDER"""
         return await interaction.response.send_message(view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
 
-    #@app_commands.command(name="color", description="Set your profile color")
-    #@is_registered()
-    #@is_voter()
-    #async def profile_color(self, interaction: discord.Interaction, color: str):
-    #    if not is_color_like(color):
-    #        return await interaction.response.send_message("please provide a valid color!", ephemeral=True)
-    #    #await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
-    #    return await interaction.response.send_message(embed=discord.Embed(title=f"Profile color set to: {color}"))
+    @app_commands.command(name="color", description="Set your profile color")
+    @is_registered()
+    @is_voter()
+    async def profile_color(self, interaction: discord.Interaction, color: str):
+        if not is_color_like(color):
+            return await interaction.response.send_message("please provide a valid color!", ephemeral=True)
+        await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
+        return await interaction.response.send_message(embed=discord.Embed(title=f"Profile color set to: {color}"))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))
