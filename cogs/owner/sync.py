@@ -13,15 +13,13 @@ class Sync(commands.Cog):
     @app_commands.guilds(TEST_GUILD)
     @app_commands.check(is_owner)
     async def sync(self, interaction:discord.Interaction):
-        self.bot.tree.copy_global_to(guild=TEST_GUILD)
-        await self.bot.tree.sync(guild=TEST_GUILD)
+        await self.bot.tree.sync()
         await interaction.response.send_message("Commands synced!")
     
     @commands.is_owner()
     @commands.command(name="sync")
     async def _sync(self, ctx):
-        self.bot.tree.copy_global_to(guild=TEST_GUILD)
-        await self.bot.tree.sync(guild=TEST_GUILD)
+        await self.bot.tree.sync()
         await ctx.send("Commands synced!")
     
 async def setup(bot):
