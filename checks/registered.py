@@ -6,29 +6,6 @@ from database.database import Database
 from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR
 
-class GenderSelect(discord.ui.Select):
-    def __init__(self, author: discord.User, bot):
-        self.author = author
-        self.bot = bot
-        options = [            
-            discord.SelectOption(label="Male",emoji="♂️",),
-            discord.SelectOption(label="Female",emoji="♀️"),
-            discord.SelectOption(label="Divers",emoji="🧑")
-        ]
-        super().__init__(placeholder="Select your gender", max_values=1, min_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        await self.bot.db.update_many({"_id": str(self.author.id)}, {"$set": {"gender": self.values[0]}})
-            
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Gender set to {self.values[0]}", color=EMBED_COLOR))
-
-
-class SelectView(discord.ui.View):
-    def __init__(self, *, author:discord.User, bot, timeout = None):
-        super().__init__(timeout=timeout)
-        self.add_item(GenderSelect(author=author, bot=bot))
-
-
 class NotRegistered(discord.app_commands.CheckFailure):
     pass
 
