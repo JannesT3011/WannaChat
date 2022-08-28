@@ -66,7 +66,10 @@ class GlobalChat(commands.Cog):
 
             globalchat_data["channels"].remove(message.channel.id)
 
-            await self.bot.db.update_many({"_id": str(message.author.id)}, {"$set": {"xp": random_xp}})
+            data = await self.bot.db.find_one({"_id": str(message.author.id)})
+            old_xp = data["xp"]
+            
+            await self.bot.db.update_many({"_id": str(message.author.id)}, {"$set": {"xp": old_xp + random_xp()}})
 
             for channel in globalchat_data["channels"]:
                 try:
