@@ -104,8 +104,8 @@ class Bot(commands.AutoShardedBot):
     async def startup(self):
         await self.wait_until_ready()
         #await self.tree.sync()
-        self.bot.tree.copy_global_to(guild=self.test_guild)
-        await self.bot.tree.sync(guild=self.test_guild)
+        self.tree.copy_global_to(guild=self.test_guild)
+        await self.tree.sync(guild=self.test_guild)
         self.sycned = True
 
     async def setup_hook(self) -> None:
