@@ -6,6 +6,7 @@ from better_profanity import profanity
 from database.database import Database
 from checks.base_check import is_guild
 import asyncio
+from utils import random_xp
 
 class GlobalChat(commands.Cog):
     def __init__(self, bot):
@@ -64,6 +65,8 @@ class GlobalChat(commands.Cog):
                 return await message.author.send("You were banned from the GlobalChat!")
 
             globalchat_data["channels"].remove(message.channel.id)
+
+            await self.bot.db.update_many({"_id": str(message.author.id)}, {"$set": {"xp": random_xp}})
 
             for channel in globalchat_data["channels"]:
                 try:
