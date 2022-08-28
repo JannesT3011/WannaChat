@@ -43,6 +43,9 @@ def db_layout(userid: str) -> dict:
                     "liked_users": [],
                     "disliked_users": [],
                     "liked_by": [],
+                    "color": "",
+                    "xp": "",
+                    "emojis": [],
                     "server_join": str(datetime.utcnow()),
                     }
 
