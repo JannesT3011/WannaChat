@@ -1,14 +1,19 @@
 """DELETE USER wc.userdel user"""
 import discord
+from discord import app_commands
 from discord.ext import commands
 from database.database import Database
+from checks.base_check import is_owner
+
+TEST_GUILD = discord.Object(364335676549890048)
 
 class DelUser(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.is_owner()
-    @commands.command(name='deluser')
+    @app_commands.command(name='deluser')
+    @app_commands.guilds(TEST_GUILD)
+    @app_commands.check(is_owner)
     async def deluser(self, ctx, *, id:int):
         try:
             await Database().delete_db(str(id))

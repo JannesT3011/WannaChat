@@ -7,6 +7,7 @@ import datetime
 import requests
 from checks.voted import NotVoted
 from checks.registered import NotRegistered
+from checks.base_check import NotGuild
 from discord.ui import Button, View
 import topgg
 from cogs.profile import SelectView
@@ -102,7 +103,10 @@ class Bot(commands.AutoShardedBot):
 
     async def startup(self):
         await self.wait_until_ready()
-        await self.tree.sync()
+        #await self.tree.sync()
+        self.bot.tree.copy_global_to(guild=self.test_guild)
+        await self.bot.tree.sync(guild=self.test_guild)
+        self.sycned = True
 
     async def setup_hook(self) -> None:
         self.tree.on_error = self.on_app_command_error
@@ -139,6 +143,9 @@ class Bot(commands.AutoShardedBot):
             view.add_item(login_button)
 
             return await interaction.response.send_message(embed=embed, view=view, ephemeral=True)   
+
+        elif isinstance(error, NotGuild):
+            return await interaction.response.send_message(embed=discord.Embed(title="You can only use this command on a server"), ephemeral=True)
 
         elif isinstance(error, discord.app_commands.CheckFailure):
             return await interaction.response.send_message(embed=ErrorEmbed(str(error))) 

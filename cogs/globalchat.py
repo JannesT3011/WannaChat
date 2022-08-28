@@ -4,6 +4,7 @@ from discord import app_commands
 from config import EMBED_COLOR
 from better_profanity import profanity
 from database.database import Database
+from checks.base_check import is_guild
 import asyncio
 
 class GlobalChat(commands.Cog):
@@ -15,6 +16,7 @@ class GlobalChat(commands.Cog):
     @globalchat_group.command(name="activate", description="Activate the GlobalChat in this channel")
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.checks.bot_has_permissions(manage_guild=True)
+    @app_commands.guild_only()
     async def activate(self, interaction:discord.Interaction):
         """ACTIVATE GLOBAL CHAT IN CHANNEL"""
 
@@ -35,6 +37,7 @@ class GlobalChat(commands.Cog):
 
     @globalchat_group.command(name="deactivate", description="Deactivate the GlobalChat in this channel")
     @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.guild_only()
     async def deactivate(self, interaction:discord.Interaction):
         """DEACTIVATE GLOABL CHAT IN CHANNEL"""
         try:

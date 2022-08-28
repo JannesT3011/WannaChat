@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from checks.owner_check import is_owner
+from checks.base_check import is_owner
 from typing import Literal
 
 TEST_GUILD = discord.Object(364335676549890048)
@@ -77,4 +77,4 @@ class Owner(commands.Cog):
         return await interaction.response.send_message(embed=discord.Embed(title=f"{user.name} banned!"))
 
 async def setup(bot):
-    await bot.add_cog(Owner(bot))
+    await bot.add_cog(Owner(bot), guild=bot.test_guild)
