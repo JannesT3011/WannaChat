@@ -113,6 +113,10 @@ class Bot(commands.AutoShardedBot):
 
         self.loop.create_task(self.startup())
 
+    async def on_command_error(self, ctx, exception) -> None:
+        if isinstance(exception, commands.CommandNotFound):
+            return await ctx.send(embed=ErrorEmbed(f"This isn't a command! Please use the `{PREFIX}help` command"))
+
     async def on_app_command_error(self, interaction: discord.Interaction, error) -> None:
         if isinstance(error, commands.BotMissingAnyRole):
               return await interaction.response.send_message(embed=ErrorEmbed(str(error)))
