@@ -59,6 +59,7 @@ class GlobalChat(commands.Cog):
         if message.channel.id in globalchat_data["channels"]:
             try:
                 await Database().init_db(str(message.author.id))
+                await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(message.author.id)}})
                 embed = discord.Embed(title="You can also use me to find new friends!", description="See `/help` for more infos.")
                 await message.author.send(embed=embed)
             except:
