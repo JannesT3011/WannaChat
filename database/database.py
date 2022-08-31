@@ -1,6 +1,6 @@
 import motor.motor_asyncio as motor
 from datetime import datetime
-from config import CONNECTION, CLUSTER, DB, QUEUEDB, GCSERVERDB
+from config import CONNECTION, CLUSTER, DB, QUEUEDB, GCSERVERDB, EMBED_COLOR
 
 class DbClient:
     """CREATES A CONNECTION TO YOUR DATABASE"""
@@ -43,8 +43,9 @@ def db_layout(userid: str) -> dict:
                     "liked_users": [],
                     "disliked_users": [],
                     "liked_by": [],
-                    "color": "",
+                    "color": EMBED_COLOR,
                     "xp": 0,
+                    "coins": 0,
                     "emojis": [],
                     "server_join": str(datetime.utcnow()),
                     }
