@@ -59,6 +59,8 @@ class GlobalChat(commands.Cog):
         if message.channel.id in globalchat_data["channels"]:
             try:
                 await Database().init_db(str(message.author.id))
+                embed = discord.Embed(title="You can also use me to find new friends!", description="See `/help` for more infos.")
+                await message.author.send(embed=embed)
             except:
                 pass
             if message.author.id in globalchat_data["blacklist"]:
@@ -68,15 +70,16 @@ class GlobalChat(commands.Cog):
 
             data = await self.bot.db.find_one({"_id": str(message.author.id)})
             old_xp = data["xp"]
+            old_coins = data["coins"]
             
             await self.bot.db.update_many({"_id": str(message.author.id)}, {"$set": {"xp": old_xp + random_xp()}})
+            await self.bot.db.update_many({"_id": str(message.author.id)}, {"$set": {"coins": old_coins + random_xp()}})
 
             for channel in globalchat_data["channels"]:
                 try:
                     c = await self.bot.fetch_channel(channel)
                     embed = discord.Embed(title=message.author.name, description=profanity.censor(message.content), timestamp=message.created_at, color=message.author.color)
                     embed.set_thumbnail(url=message.author.display_avatar.url)
-                    #embed.set_footer(icon_url=self.bot.user.display_avatar.url)
                     await c.send(embed=embed)
                     await asyncio.sleep(0.3)
                 except:
