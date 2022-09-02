@@ -77,7 +77,6 @@ class Bot(commands.AutoShardedBot):
         await topgg_client.close()
 
     async def on_ready(self):
-        await self.load_cogs()
         await self.post_guild_count()
 
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
@@ -86,12 +85,6 @@ class Bot(commands.AutoShardedBot):
         """IGNORE BOT MESSAGES"""
         if message.author.bot:
             return
-        
-        if message.guild and message.content.startswith(PREFIX) and not message.content.startswith(f"{PREFIX}help") :
-            try:
-                return await message.author.send("Use me here, daddy!")
-            except:
-                return await message.send("Use me in my DMs, daddy!", delete_after=5)
 
         await self.process_commands(message)
 
@@ -103,14 +96,11 @@ class Bot(commands.AutoShardedBot):
 
     async def startup(self):
         await self.wait_until_ready()
-        #await self.tree.sync()
-        self.tree.copy_global_to(guild=self.test_guild)
-        await self.tree.sync(guild=self.test_guild)
-        self.sycned = True
+        await self.tree.sync()
 
     async def setup_hook(self) -> None:
         self.tree.on_error = self.on_app_command_error
-
+        await self.load_cogs()
         self.loop.create_task(self.startup())
 
     async def on_command_error(self, ctx, exception) -> None:
@@ -191,4 +181,4 @@ class OwnerErrorEmbed(discord.Embed):
         )
         self.set_footer(text=f"{bot.version} • made with ❤️ by {bot.creator}", icon_url=bot.user.display_avatar.url)
 
-bot.run(TOKEN)
+bot.run(TOKEN, reconnect=True)
