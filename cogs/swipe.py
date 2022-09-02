@@ -92,7 +92,7 @@ class Swipe(commands.Cog):
         """CREATE THE PROFILE EMBED"""
         chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner_id)})
 
-        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=EMBED_COLOR)
+        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=EMBED_COLOR if chat_partner_data["color"]=="" else discord.Colour.from_str(chat_partner_data["color"]))
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(chat_partner_data["language"]), inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])

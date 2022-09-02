@@ -79,7 +79,11 @@ class GlobalChat(commands.Cog):
             for channel in globalchat_data["channels"]:
                 try:
                     c = await self.bot.fetch_channel(channel)
-                    embed = discord.Embed(title=message.author.name, description=profanity.censor(message.content), timestamp=message.created_at, color=message.author.color)
+                    embed = discord.Embed(
+                        title=message.author.name, 
+                        description=profanity.censor(message.content), 
+                        timestamp=message.created_at, 
+                        color=EMBED_COLOR if data["color"]=="" else discord.Colour.from_str(data["color"]))
                     embed.set_thumbnail(url=message.author.display_avatar.url)
                     await c.send(embed=embed)
                     await asyncio.sleep(0.3)

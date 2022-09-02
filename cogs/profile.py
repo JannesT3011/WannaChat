@@ -74,7 +74,7 @@ class Profile(commands.Cog):
         """VIEW PROFILE"""
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
 
-        embed = discord.Embed(title="Your profile 🧑", color=EMBED_COLOR)
+        embed = discord.Embed(title="Your profile 🧑", color=EMBED_COLOR if data["color"]=="" else discord.Colour.from_str(data["color"]))
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(data["language"]), inline=True)
         embed.add_field(name="Gender", value=data["gender"])
@@ -211,7 +211,7 @@ class Profile(commands.Cog):
     @is_registered()
     @is_voter()
     async def profile_color(self, interaction: discord.Interaction, color: str):
-        if not is_color_like(color):
+        if not is_color_like(color) and not color.startswith("#"):
             return await interaction.response.send_message("please provide a valid color!", ephemeral=True)
         await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
         return await interaction.response.send_message(embed=discord.Embed(title=f"Profile color set to: {color}"))
