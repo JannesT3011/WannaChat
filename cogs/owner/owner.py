@@ -17,14 +17,14 @@ class Owner(commands.Cog):
         """GET THE AMOUNT OF BOT USERS"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
 
-        return await interaction.response.send_message(f"We are currently {len(data['queue'])} users")
+        return await interaction.response.send_message(f"We are currently {len(data['queue'])} users", ephemeral=True)
     
     @app_commands.command(name="servers", description="Get the server count")
     @app_commands.guilds(TEST_GUILD)
     @app_commands.check(is_owner)
     async def guilds(self, interaction: discord.Interaction):
         """GET THE AMOUNT OF BOT GUILDS"""
-        return await interaction.response.send_message(f"Im currenty on {len(self.bot.guilds)} server(s)")
+        return await interaction.response.send_message(f"Im currenty on {len(self.bot.guilds)} server(s)", ephemeral=True)
     
     @app_commands.command(name="status", description="Change the status of the Bot")
     @app_commands.guilds(TEST_GUILD)
@@ -40,18 +40,18 @@ class Owner(commands.Cog):
         else:
             return await interaction.response.send_message("No valid type -> `game, watching, listening`")
 
-        return await interaction.response.send_message(f"Status set to {game}")
+        return await interaction.response.send_message(f"Status set to {game}", ephemeral=True)
     
     @app_commands.command(name="stats", description="Stats about the bot")
     @app_commands.guilds(TEST_GUILD)
     @app_commands.check(is_owner)
-    async def stats(self, interaction: discord.Interaction):
+    async def _stats(self, interaction: discord.Interaction):
         """SHOW USERS AND SERVERS IN ONE MESSAGE"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
         gc_data = await self.bot.gcserversdb.find_one({"_id": "servers"})
 
-        return await interaction.response.send_message(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n**GC Channels:**{len(gc_data['channels'])}", timestamp=interaction.created_at))
-
+        return await interaction.response.send_message(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n**GC Channels:**{len(gc_data['channels'])}", timestamp=interaction.created_at), ephemeral=True)
+    
     @app_commands.command(name="gcban", description="Ban user from GlobalChat")
     @app_commands.guilds(TEST_GUILD)
     @app_commands.check(is_owner)
@@ -74,7 +74,7 @@ class Owner(commands.Cog):
             except:
                 continue
 
-        return await interaction.response.send_message(embed=discord.Embed(title=f"{user.name} banned!"))
+        return await interaction.response.send_message(embed=discord.Embed(title=f"{user.name} banned!"), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Owner(bot), guild=bot.test_guild)
