@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from checks.base_check import is_owner
-app_commands.guilds()
+
 TEST_GUILD = discord.Object(364335676549890048)
 
 class Sync(commands.Cog):
@@ -23,4 +23,4 @@ class Sync(commands.Cog):
         return await ctx.send("Commands synced!")
     
 async def setup(bot):
-    await bot.add_cog(Sync(bot), guild=bot.test_guild)
+    await bot.add_cog(Sync(bot))

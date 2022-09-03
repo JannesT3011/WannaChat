@@ -77,4 +77,4 @@ class Owner(commands.Cog):
         return await interaction.response.send_message(embed=discord.Embed(title=f"{user.name} banned!"), ephemeral=True)
 
 async def setup(bot):
-    await bot.add_cog(Owner(bot), guild=bot.test_guild)
+    await bot.add_cog(Owner(bot))
