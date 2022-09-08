@@ -79,15 +79,15 @@ class Help(commands.Cog):
         f"`{PREFIX}interests view`: View your current interests\n"
         f"`{PREFIX}interests add <interest>`: Set your interest\n"
         f"`{PREFIX}interests remove`: Remove interest\n"
-        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n"
-        f"`{PREFIX}color`: Set your Profile color",
+        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
         embed.add_field(name="Globalchat Commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
         f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
         embed.add_field(name="Voting benefit commands", value=f"`{PREFIX}likedby`: See the users who liked you\n"
         f"`{PREFIX}reset`: Reset your likes and dislikes\n"
         f"`{PREFIX}reset likes`: Reset your likes\n"
-        f"`{PREFIX}reset dislikes`: Reset your dislikes\n", 
+        f"`{PREFIX}reset dislikes`: Reset your dislikes\n"
+        f"`{PREFIX}color`: Set your Profile color",
         inline=False)
         embed.add_field(name="Support", value=f"`{PREFIX}bug <bug>`: Report a bug\n" 
         f"`{PREFIX}suggestions <suggestion>`: Submit new feature suggestionn\nOr join the [support server]( {SUPPORT_SERVER_LINK} )\n"
