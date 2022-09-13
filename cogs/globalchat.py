@@ -86,7 +86,7 @@ class GlobalChat(commands.Cog):
                         color=EMBED_COLOR if data["color"]=="" else discord.Colour.from_str(data["color"]))
                     embed.set_thumbnail(url=message.author.display_avatar.url)
                     await c.send(embed=embed)
-                    await asyncio.sleep(0.3)
+                    await asyncio.sleep(0.5)
                 except:
                     continue
 
