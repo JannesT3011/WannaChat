@@ -2,9 +2,10 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from config import PREFIX, EMBED_COLOR
-from checks.registered import is_registered, registered
+from checks.registered import is_registered
 from checks.voted import is_voter
 from matplotlib.colors import is_color_like
+
 
 class GenderSelect(discord.ui.Select):
     def __init__(self, author: discord.User, bot):
@@ -27,6 +28,8 @@ class SelectView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.add_item(GenderSelect(author=author, bot=bot))
 
+    async def on_timeout(self) -> None:
+        self.stop()
 
 class InterestSelect(discord.ui.Select):
     def __init__(self, author: discord.User, bot, interests:list):
@@ -85,7 +88,10 @@ class Profile(commands.Cog):
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
         embed.set_thumbnail(url=interaction.user.display_avatar.url)
         embed.set_footer(text=f"See how you modify your profile with {PREFIX}help")
-        await interaction.response.send_message(embed=embed, view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
+
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if data:
+            await interaction.followup.send(embed=embed, view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
         
         embed = discord.Embed(title="Complete your profile:", color=EMBED_COLOR)
         if data["gender"] == "-":
@@ -110,10 +116,13 @@ class Profile(commands.Cog):
         if age > 119:
             return await interaction.response.send_message("I dont think the oldest person on this world is using this Bot 👵. But if you are, send me a message with: `wc.bug`")
         try:
-            await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"age": age}})
+            r = await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"age": age}})
         except:
             return await interaction.response.send_message(f"Please use `{PREFIX}login` first", ephemeral=True)
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Age set to {age}",color=EMBED_COLOR), ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if r:
+            return await interaction.followup.send(embed=discord.Embed(title=f"Age set to {age}",color=EMBED_COLOR), ephemeral=True)
         
     @profile_age.error
     async def age_error(self, interaction: discord.Interaction, error):
@@ -128,8 +137,10 @@ class Profile(commands.Cog):
     async def language(self, interaction: discord.Interaction):
         """SET YOUR PROFILE LANGUAGE"""
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
-            
-        return await interaction.response.send_message(embed=discord.Embed(title="Your current languages:", description=", ".join(data["language"])).set_footer(text=f"Use: {PREFIX}language <add/delete> to add/delete a language"), ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if data:
+            return await interaction.followup.send(embed=discord.Embed(title="Your current languages:", description=", ".join(data["language"])).set_footer(text=f"Use: {PREFIX}language <add/delete> to add/delete a language"), ephemeral=True)
         
     @language_group.command(name="add", description="Add one language")
     @is_registered()
@@ -144,14 +155,19 @@ class Profile(commands.Cog):
         if language in data["language"]:
             return await interaction.response.send_message("Language already added!")
         await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$push": {"language": language.lower()}})
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR), ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if data:
+            return await interaction.followup.send(embed=discord.Embed(title=f"Language added: {language}", color=EMBED_COLOR), ephemeral=True)
         
     @language_group.command(name="remove", description="Remove a language")
     @is_registered()
     async def language_delete(self, interaction: discord.Interaction):
         languages = await self.bot.db.find_one({"_id": str(interaction.user.id)})
 
-        return await interaction.response.send_message(view=LanguageSelectView(author=interaction.user, bot=self.bot, language=languages["language"]), ephemeral=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if languages:
+            return await interaction.followup.send(view=LanguageSelectView(author=interaction.user, bot=self.bot, language=languages["language"]), ephemeral=True)
 
     @app_commands.command(name="aboutme", description="Set your AboutMe description")
     @is_registered()
@@ -162,10 +178,13 @@ class Profile(commands.Cog):
         if any(word in aboutme for word in self.bot.blacklist):
             return await interaction.response.send_message("Uh, dont use that word! 😞", ephemeral=True)
         try:
-            await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"aboutme": aboutme}})
+            r = await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"aboutme": aboutme}})
         except:
             return await interaction.response.send_message(f"Please use `{PREFIX}login` first", ephemeral=True)
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`", color=EMBED_COLOR), ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if r:
+            return await interaction.followup.send(embed=discord.Embed(title=f"Aboutme set to `{aboutme}`", color=EMBED_COLOR), ephemeral=True)
         
     interest_group = app_commands.Group(name="interests", description="View, add and remove your interests")
 
@@ -174,7 +193,10 @@ class Profile(commands.Cog):
     async def interests(self, interaction: discord.Interaction):
         """SET YOUR PROFILE INTERESTS"""
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
-        return await interaction.response.send_message(embed=discord.Embed(title="Your current interests:", description=", ".join(data["interests"])).set_footer(text=f"Use: {PREFIX}interests <add/delete> to add/delete a interests"), ephemeral=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        
+        if data:
+            return await interaction.followup.send(embed=discord.Embed(title="Your current interests:", description=", ".join(data["interests"])).set_footer(text=f"Use: {PREFIX}interests <add/delete> to add/delete a interests"), ephemeral=True)
         
     @interest_group.command(name="add", description="Add a interest")
     @is_registered()
@@ -182,16 +204,19 @@ class Profile(commands.Cog):
         """ADD INTEREST"""
         if interests in self.bot.blacklist:
             return await interaction.response.send_message("Uh, dont use that word! 😞", ephemeral=True)
-        data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         interest = interests.split(" ")
         if len(interest) > 1:
             return await interaction.response.send_message("Please use only one word, as interest tag!", ephemeral=True)
         
         interest = interest[0]
+        data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         if len(data["interests"]) > 5:
             return await interaction.response.send_message("You can have max. 5 interests!", ephemeral=True)
         await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$push": {"interests": interest}})
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Interest added: {interest}", color=EMBED_COLOR), ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if data:
+            return await interaction.followup.send(embed=discord.Embed(title=f"Interest added: {interest}", color=EMBED_COLOR), ephemeral=True)
         
     @interest_group.command(name="remove", description="Remove a interest")
     @is_registered()
@@ -199,7 +224,9 @@ class Profile(commands.Cog):
         """DELETE A INTEREST"""
         interests = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         
-        return await interaction.response.send_message(view=InterestSelectView(author=interaction.user, bot=self.bot, interests=interests["interests"]), ephemeral=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if interests:
+            return await interaction.followup.send(view=InterestSelectView(author=interaction.user, bot=self.bot, interests=interests["interests"]), ephemeral=True)
 
     @app_commands.command(name="gender", description="Set your gender")
     @is_registered()
@@ -213,8 +240,11 @@ class Profile(commands.Cog):
     async def profile_color(self, interaction: discord.Interaction, color: str):
         if not is_color_like(color) and not color.startswith("#"):
             return await interaction.response.send_message("please provide a valid color!", ephemeral=True)
-        await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
-        return await interaction.response.send_message(embed=discord.Embed(title=f"Profile color set to: {color}"))
+        r = await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if r:
+            return await interaction.followup.send(embed=discord.Embed(title=f"Profile color set to: {color}"))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))
