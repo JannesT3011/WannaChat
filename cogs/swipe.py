@@ -91,8 +91,15 @@ class Swipe(commands.Cog):
     async def create_profile_embed(self, chatpartner, chatpartner_id) -> discord.Embed:
         """CREATE THE PROFILE EMBED"""
         chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner_id)})
+        try:
+            if chat_partner_data["color"]=="":
+                color = EMBED_COLOR
+            else:
+                color =  discord.Colour.from_str(chat_partner_data["color"])
+        except:
+            color = EMBED_COLOR
 
-        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=EMBED_COLOR if chat_partner_data["color"]=="" else discord.Colour.from_str(chat_partner_data["color"]))
+        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=color)
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(chat_partner_data["language"]), inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])
@@ -136,21 +143,27 @@ class Swipe(commands.Cog):
         self.match = ""
         self.match_id = ""
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+        
         if await self.on_swipelimit(data) and not await self.voted(int(interaction.user.id)):
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
             view = View(timeout=None)
             view.add_item(vote_button)
             return await interaction.response.send_message(embed=discord.Embed(title="You reached the like limit!", description="Vote to get infinity likes!", color=EMBED_COLOR), view=view, ephemeral=True)
+        
         self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
         self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+        
         while self.chat_partner is None:
             self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+        
         embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
-        async def info_button_interaction(interacion):
+        
+        async def info_button_interaction(interacion: discord.Interaction):
             embed = await self.create_profile_embed(self.match, self.match_id)
             await interacion.response.send_message(embed=embed, ephemeral=True)
-        async def like_button_interaction(interaction):
+        
+        async def like_button_interaction(interaction: discord.Interaction):
             if await self.is_match(str(interaction.user.id), self.chat_partner_id):
                 self.match = self.chat_partner
                 self.match_id = self.chat_partner_id
@@ -168,40 +181,56 @@ class Swipe(commands.Cog):
             await self.add_to_likeduser(str(interaction.user.id), self.chat_partner_id)
             self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+            
             while self.chat_partner is None:
                 self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-            embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
-            await interaction.response.edit_message(embed=embed) 
-        async def dislike_button_interaction(interaction):
+           
+            if embed:
+                await interaction.response.edit_message(embed=embed) 
+        
+        async def dislike_button_interaction(interaction: discord.Interaction):
             await self.add_to_disliked(str(interaction.user.id), self.chat_partner_id)
             try:
                 self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+                
                 while self.chat_partner is None:
                     self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                     self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+                
                 embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
-                await interaction.response.edit_message(embed=embed) 
+
+                if embed:
+                    await interaction.response.edit_message(embed=embed) 
+
             except TypeError:
                 like_button.disabled = True
                 dislike_button.disabled = True
             
         async def cancel_button_interaction(interaction):
             await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
+        
         like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️") 
         dislike_button = Button(label="Nah", style=discord.ButtonStyle.red, emoji="💤") # TODO error handler -> on_timeout -> await interaction.delete_original_message() message
         cancel_button = Button(label="Cancel", style=discord.ButtonStyle.grey, emoji="❌")
         like_button.callback = like_button_interaction
         dislike_button.callback = dislike_button_interaction
         cancel_button.callback = cancel_button_interaction
+       
         view = View()
+        #await view.wait()
         view.add_item(like_button)
         view.add_item(dislike_button)
         view.add_item(cancel_button)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        if embed:
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+        
         author_data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         embed = discord.Embed(title="Please complete your profile:", color=EMBED_COLOR)
+        
         if author_data["gender"] == "-":
             embed.add_field(name="❌ Add your gender:", value=f"`{PREFIX}gender`", inline=False)
         if author_data["age"] == "-":
