@@ -5,6 +5,7 @@ from config import PREFIX, EMBED_COLOR
 from checks.registered import is_registered
 from checks.voted import is_voter
 from matplotlib.colors import is_color_like
+from utils import get_color
 
 
 class GenderSelect(discord.ui.Select):
@@ -77,7 +78,7 @@ class Profile(commands.Cog):
         """VIEW PROFILE"""
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
 
-        embed = discord.Embed(title="Your profile 🧑", color=EMBED_COLOR if data["color"]=="" else discord.Colour.from_str(data["color"]))
+        embed = discord.Embed(title="Your profile 🧑", color=await get_color(self.bot.db, interaction.user.id))
         embed.add_field(name="Age", value=data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(data["language"]), inline=True)
         embed.add_field(name="Gender", value=data["gender"])

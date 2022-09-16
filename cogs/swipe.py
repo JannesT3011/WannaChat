@@ -6,6 +6,7 @@ from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
 import topgg
 from checks.registered import is_registered
+from utils import get_color
 
 class Swipe(commands.Cog):
     def __init__(self, bot):
@@ -91,15 +92,8 @@ class Swipe(commands.Cog):
     async def create_profile_embed(self, chatpartner, chatpartner_id) -> discord.Embed:
         """CREATE THE PROFILE EMBED"""
         chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner_id)})
-        try:
-            if chat_partner_data["color"]=="":
-                color = EMBED_COLOR
-            else:
-                color =  discord.Colour.from_str(chat_partner_data["color"])
-        except:
-            color = EMBED_COLOR
 
-        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=color)
+        embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=await get_color(self.bot.db, chatpartner_id))
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(chat_partner_data["language"]), inline=True)
         embed.add_field(name="Gender", value=chat_partner_data["gender"])
@@ -179,6 +173,7 @@ class Swipe(commands.Cog):
             
             await self.add_to_likedby(str(interaction.user.id), self.chat_partner_id)
             await self.add_to_likeduser(str(interaction.user.id), self.chat_partner_id)
+            
             self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
             
@@ -186,6 +181,8 @@ class Swipe(commands.Cog):
                 self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
            
+            embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
+
             if embed:
                 await interaction.response.edit_message(embed=embed) 
         
@@ -208,7 +205,7 @@ class Swipe(commands.Cog):
                 like_button.disabled = True
                 dislike_button.disabled = True
             
-        async def cancel_button_interaction(interaction):
+        async def cancel_button_interaction(interaction: discord.Interaction):
             await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
         
         like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️") 
