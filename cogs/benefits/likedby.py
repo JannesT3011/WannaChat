@@ -24,7 +24,9 @@ class LikedBy(commands.Cog):
             users = [await self.bot.fetch_user(int(user)) for user in data]
             users = [f"`{user.name}#{user.discriminator}`" for user in users]
             
-            return await interaction.response.send_message(embed=discord.Embed(title="You were liked by these users:", description=", ".join(users), color=EMBED_COLOR).set_footer(text="Add one of the users who liked you and start chatting 🙊", icon_url=self.bot.user.display_avatar.url), ephemeral=True)
+            await interaction.response.defer(ephemeral=True, thinking=True)
+            if data:
+                return await interaction.followup.send(embed=discord.Embed(title="You were liked by these users:", description=", ".join(users), color=EMBED_COLOR).set_footer(text="Add one of the users who liked you and start chatting 🙊", icon_url=self.bot.user.display_avatar.url), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(LikedBy(bot))
