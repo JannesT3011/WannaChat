@@ -9,7 +9,7 @@ class HelpCategorySelect(discord.ui.Select):
         self.bot = bot
         options = [            
             discord.SelectOption(label="Profile",emoji="🧑"),
-            discord.SelectOption(label="GlobalChat", emoji="🌐")
+            #discord.SelectOption(label="GlobalChat", emoji="🌐")
         ]
         super().__init__(placeholder="Select category", max_values=1, min_values=1, options=options)
 
@@ -39,20 +39,20 @@ class HelpCategorySelect(discord.ui.Select):
 
             return await interaction.response.send_message(embed=embed, view=view)
         
-        if self.values[0] == "GlobalChat":
-            embed = discord.Embed(title="WannaChat - GlobalChat help", description="Swipe to find random chat partners!\n<> are required arguments, you DONT need to type `<>`!\nUse this commands to start the **GlobalChat**:", 
-            color=EMBED_COLOR)
-            embed.add_field(name="GlobalChat commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
-            f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
-            embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
-            
-            invite_button = Button(label="Add me to your server", url="https://discord.com/oauth2/authorize?client_id=979065679376437308&scope=bot+applications.commands&permissions=414464724032")
-            vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
-            view = View()
-            view.add_item(invite_button)
-            view.add_item(vote_button)
-
-            return await interaction.response.send_message(embed=embed, view=view)
+        #if self.values[0] == "GlobalChat":
+        #    embed = discord.Embed(title="WannaChat - GlobalChat help", description="Swipe to find random chat partners!\n<> are required arguments, you DONT need to type `<>`!\nUse this commands to start the **GlobalChat**:", 
+        #    color=EMBED_COLOR)
+        #    embed.add_field(name="GlobalChat commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
+        #    f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
+        #    embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
+        #    
+        #    invite_button = Button(label="Add me to your server", url="https://discord.com/oauth2/authorize?client_id=979065679376437308&scope=bot+applications.commands&permissions=414464724032")
+        #    vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
+        #    view = View()
+        #    view.add_item(invite_button)
+        #    view.add_item(vote_button)
+#
+        #    return await interaction.response.send_message(embed=embed, view=view)
 
 
 class Help(commands.Cog):
@@ -81,8 +81,8 @@ class Help(commands.Cog):
         f"`{PREFIX}interests remove`: Remove interest\n"
         f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
         inline=False)
-        embed.add_field(name="Globalchat Commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
-        f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
+        #embed.add_field(name="Globalchat Commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
+        #f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
         embed.add_field(name="Voting benefit commands", value=f"`{PREFIX}likedby`: See the users who liked you\n"
         f"`{PREFIX}reset`: Reset your likes and dislikes\n"
         f"`{PREFIX}reset likes`: Reset your likes\n"

@@ -17,7 +17,7 @@ COGS = [
     "cogs.profile",
     "cogs.login",
     "cogs.swipe",
-    "cogs.globalchat",
+    #"cogs.globalchat",
     "cogs.xp_coins",
 
     "cogs.support.support",
