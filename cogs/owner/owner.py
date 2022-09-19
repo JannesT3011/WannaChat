@@ -51,7 +51,7 @@ class Owner(commands.Cog):
 
         await interaction.response.defer(thinking=True)
         if data:
-            return await interaction.response.send_message(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n", timestamp=interaction.created_at), ephemeral=True)
+            return await interaction.followup.send(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n", timestamp=interaction.created_at), ephemeral=True)
     
     @app_commands.command(name="gcban", description="Ban user from GlobalChat")
     @app_commands.guilds(TEST_GUILD)
