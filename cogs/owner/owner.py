@@ -43,14 +43,15 @@ class Owner(commands.Cog):
         return await interaction.response.send_message(f"Status set to {game}", ephemeral=True)
     
     @app_commands.command(name="stats", description="Stats about the bot")
-    @app_commands.guilds(TEST_GUILD)
+    #@app_commands.guilds(TEST_GUILD)
     @app_commands.check(is_owner)
     async def _stats(self, interaction: discord.Interaction):
         """SHOW USERS AND SERVERS IN ONE MESSAGE"""
         data = await self.bot.queuedb.find_one({"_id": "queue"})
-        gc_data = await self.bot.gcserversdb.find_one({"_id": "servers"})
 
-        return await interaction.response.send_message(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n**GC Channels:**{len(gc_data['channels'])}", timestamp=interaction.created_at), ephemeral=True)
+        await interaction.response.defer(thinking=True)
+        if data:
+            return await interaction.response.send_message(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n", timestamp=interaction.created_at), ephemeral=True)
     
     @app_commands.command(name="gcban", description="Ban user from GlobalChat")
     @app_commands.guilds(TEST_GUILD)
