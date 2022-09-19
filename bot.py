@@ -11,6 +11,9 @@ from checks.base_check import NotGuild
 from discord.ui import Button, View
 import topgg
 from cogs.profile import SelectView
+from utils import get_logger
+
+logger = get_logger("Bot")
 
 COGS = [
     "cogs.help",
@@ -60,6 +63,7 @@ class Bot(commands.AutoShardedBot):
         content = my_file.read()
         blacklist = content.split("\n")
         my_file.close()
+        logger.info("Loaded blacklist!")
 
         return blacklist
 
@@ -67,6 +71,7 @@ class Bot(commands.AutoShardedBot):
         for ext in COGS:
             try:
                 await self.load_extension(ext)
+                logger.debug(f"Successfully loaded {ext}")
             except Exception as e:
                 print(f"Cant load {ext}")
                 raise e
@@ -76,10 +81,14 @@ class Bot(commands.AutoShardedBot):
         topgg_client = topgg.DBLClient(self, TOPGG_TOKEN)
         await topgg_client.post_guild_count(len(self.guilds))
         await topgg_client.close()
+        logger.info("Post Guild Count to Top.gg")
 
     async def on_ready(self):
         await self.post_guild_count()
 
+        # Add new field:
+        #await self.db.update_many({}, {"$set": {"gif": None}})
+        logger.info("Bot started!")
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
     async def on_message(self, message: discord.Message):
@@ -103,6 +112,7 @@ class Bot(commands.AutoShardedBot):
         self.tree.on_error = self.on_app_command_error
         await self.load_cogs()
         self.loop.create_task(self.startup())
+        logger.info("Sync command and finisch setup hook")
 
     async def on_command_error(self, ctx, exception) -> None:
         if isinstance(exception, commands.CommandNotFound):
