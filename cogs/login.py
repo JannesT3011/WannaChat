@@ -4,8 +4,11 @@ from database.database import Database
 from config import EMBED_COLOR, PREFIX
 from discord.ui import Button, View
 from discord import app_commands
+from utils import get_logger
 
 from cogs.profile import SelectView
+
+logger = get_logger("Login/Logoff")
 
 class Login(commands.Cog):
     def __init__(self, bot):
@@ -19,6 +22,7 @@ class Login(commands.Cog):
         except:
             return await interaction.response.send_message(embed=discord.Embed(title="Already login!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:"), view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
         await self.bot.queuedb.update_many({"_id": "queue"}, {"$push": {"queue": str(interaction.user.id)}})
+        logger.debug(f"User added: {interaction.user.id}")
 
         return await interaction.response.send_message(embed=discord.Embed(title="Login successful!", description=f"Use `{PREFIX}swipe` to find a chatpartner or `{PREFIX}help` to get more infos\nStart by selecting your gender:", color=EMBED_COLOR)
         .add_field(name="Your next steps:", value=f"➡️ Set your age with `{PREFIX}age`\n➡️ Add languages with `{PREFIX}language add`\n➡️ Add your interests with `{PREFIX}interest add`\n➡️ Set your AboutMe text with `{PREFIX}aboutme`"),
@@ -35,6 +39,7 @@ class Login(commands.Cog):
                 await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
                 return await interaction.user.send("Already logoff!")
             await self.bot.queuedb.update_many({"_id": "queue"}, {"$pull": {"queue": str(interaction.user.id)}})
+            logger.debug(f"User removed: {interaction.user.id}")
 
             return await interaction.response.edit_message(embed=discord.Embed(title="Logoff successful!", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=None)
 
