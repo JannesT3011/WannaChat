@@ -5,7 +5,7 @@ import random
 from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
 import topgg
-from checks.registered import is_registered
+from checks import is_registered
 from utils import get_color, get_logger
 
 logger = get_logger("Swipe")

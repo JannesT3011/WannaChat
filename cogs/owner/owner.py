@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from checks.base_check import is_owner
+from checks import is_owner
 from typing import Literal
 
 TEST_GUILD = discord.Object(364335676549890048)

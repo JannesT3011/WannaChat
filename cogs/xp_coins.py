@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from checks.registered import is_registered
+from checks import is_registered
 from config import EMBED_COLOR
 
 class XP_Coins(commands.Cog):

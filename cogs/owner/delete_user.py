@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from database.database import Database
-from checks.base_check import is_owner
+from checks import is_owner
 
 TEST_GUILD = discord.Object(364335676549890048)
 
