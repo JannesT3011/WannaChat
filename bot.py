@@ -5,9 +5,7 @@ from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN, EMB
 from database.database import DbClient, Database
 import datetime
 import requests
-from checks.voted import NotVoted
-from checks.registered import NotRegistered
-from checks.base_check import NotGuild
+from checks import NotVoted, NotRegistered, NotGuild
 from discord.ui import Button, View
 import topgg
 from cogs.profile import SelectView
@@ -29,8 +27,10 @@ COGS = [
     "cogs.owner.delete_user",
 
     "events.guild_join_login",
+
     "cogs.benefits.likedby",
-    "cogs.benefits.reset"
+    "cogs.benefits.reset",
+    #"cogs.benefits.profile_plus"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -44,7 +44,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.5.10"
+        self.version = "v1.5.11"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.test_guild = discord.Object(364335676549890048)
