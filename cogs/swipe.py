@@ -6,7 +6,9 @@ from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR, TOPGG_TOKEN, LIMIT_LIKES
 import topgg
 from checks.registered import is_registered
-from utils import get_color
+from utils import get_color, get_logger
+
+logger = get_logger("Swipe")
 
 class Swipe(commands.Cog):
     def __init__(self, bot):
@@ -110,6 +112,7 @@ class Swipe(commands.Cog):
         """CHECK IF MATCH"""
         partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
         if str(authorid) in partner_data["liked_users"]: # TODO count matches!
+            logger.debug("New Match!")
             return True
 
         return False
@@ -139,6 +142,7 @@ class Swipe(commands.Cog):
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         
         if await self.on_swipelimit(data) and not await self.voted(int(interaction.user.id)):
+            logger.debug("User on Swipelimit!")
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
             view = View(timeout=None)
             view.add_item(vote_button)
