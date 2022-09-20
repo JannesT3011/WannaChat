@@ -19,7 +19,7 @@ COGS = [
     "cogs.login",
     "cogs.swipe",
     #"cogs.globalchat",
-    "cogs.xp_coins",
+    #"cogs.xp_coins",
 
     "cogs.support.support",
     "cogs.owner.owner",
@@ -161,7 +161,7 @@ class Bot(commands.AutoShardedBot):
         elif isinstance(error, discord.app_commands.CommandOnCooldown):
             return await interaction.response.send_message(embed=ErrorEmbed(f"Chill, you can use this command in {round(error.retry_after, 2)} seconds!"), delete_after=5)
 
-        elif isinstance(error, discord.app_commands.errors):
+        elif isinstance(error, discord.app_commands.CommandInvokeError):
             channel = self.get_channel(992779863855476826)
             return await channel.send(embed=ErrorEmbed(f"```{error}```"))
 
