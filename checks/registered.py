@@ -5,6 +5,9 @@ import discord
 from database.database import Database
 from discord.ui import Button, View
 from config import PREFIX, EMBED_COLOR
+from utils import get_logger
+
+logger = get_logger("Registered")
 
 class NotRegistered(discord.app_commands.CheckFailure):
     pass
@@ -33,6 +36,10 @@ async def registered(bot, user) -> bool:
             await interaction.user.send(embed=discord.Embed(title="Login successful!", description=f"Type `{PREFIX}swipe` to start!\nStart by selecting your gender:", color=EMBED_COLOR).set_footer(text=f"Use `{PREFIX}help` to get more infos"), view=SelectView(author=interaction.user, bot=bot))
         login_button.callback = login_button_interaction
         view.add_item(login_button)
-        await user.send(embed=embed, view=view)
+        try:
+            await user.send(embed=embed, view=view)
+        except discord.errors.Forbidden:
+            logger.debug("Cannot send message to this user.")
+
         return False
     return True
