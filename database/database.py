@@ -47,6 +47,8 @@ def db_layout(userid: str) -> dict:
                     "xp": 0,
                     "coins": 0,
                     "emojis": [],
+                    "gif": None,
+                    "premium": 0,
                     "server_join": str(datetime.utcnow()),
                     }
 
