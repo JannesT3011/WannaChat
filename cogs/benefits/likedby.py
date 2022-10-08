@@ -17,12 +17,12 @@ class LikedBy(commands.Cog):
     @is_registered()
     @is_voter()
     async def likedby(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True, thinking=True)
         data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
         data = data["liked_by"]
         users = [await self.bot.fetch_user(int(user)) for user in data]
         users = [f"`{user.name}#{user.discriminator}`" for user in users]
         
-        await interaction.response.defer(ephemeral=True, thinking=True)
         if data:
             return await interaction.followup.send(embed=discord.Embed(title="You were liked by these users:", description=", ".join(users), color=EMBED_COLOR).set_footer(text="Add one of the users who liked you and start chatting 🙊", icon_url=self.bot.user.display_avatar.url), ephemeral=True)
 
