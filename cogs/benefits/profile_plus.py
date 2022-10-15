@@ -14,11 +14,13 @@ class Gif(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
     
-    @app_commands.command(name="gif", description="Set a profile GIF") # TODO reset gif
+    gif_group = app_commands.Group(name="gif", description="👑 Add/Remove a GIF to your profile")
+
+    @gif_group.command(name="add", description="👑 Set a profile GIF")
     @app_commands.describe(gif="The giphy.com gif you want to add to your profile")
     @is_registered()
     @is_premium()
-    async def gif(self, interaction: discord.Interaction, gif: str):
+    async def gif_add(self, interaction: discord.Interaction, gif: str):
         await interaction.response.defer(ephemeral=True, thinking=True)
         
         if not gif.startswith("https://media.giphy.com"):
@@ -30,8 +32,19 @@ class Gif(commands.Cog):
 
         if r:
             return await interaction.followup.send(embed=discord.Embed(title="Profile GIF set successfully!", color=EMBED_COLOR).set_image(url=gif), ephemeral=True)
+    
+    @gif_group.command(name="remove", description="👑 Remove your profile song")
+    @is_registered()
+    @is_premium()
+    async def gif_remove(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        
+        await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"gif": None}})
 
-    @app_commands.command(name="color", description="Set your profile color")
+        return await interaction.followup.send(embed=discord.Embed(title="GIF removed!"))
+
+
+    @app_commands.command(name="color", description="👑 Set your profile color")
     @is_registered()
     @is_premium()
     async def color(self, interaction: discord.Interaction, color: str):
@@ -46,7 +59,7 @@ class Gif(commands.Cog):
 
     song_group = app_commands.Group(name="song", description="Add/Remove a spotify song to your profile")
 
-    @song_group.command(name="add", description="Set your profile color")
+    @song_group.command(name="add", description="👑 Set your profile song")
     @is_registered()
     @is_premium()
     async def song_add(self, interaction: discord.Interaction, song:str):
@@ -59,7 +72,7 @@ class Gif(commands.Cog):
 
         return await interaction.followup.send(embed=discord.Embed(title="Song successfully set!", url=song))
 
-    @song_group.command(name="remove", description="Set your profile color")
+    @song_group.command(name="remove", description="👑 Remove your profile song")
     @is_registered()
     @is_premium()
     async def song_remove(self, interaction: discord.Interaction):
