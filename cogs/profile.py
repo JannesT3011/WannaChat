@@ -4,7 +4,6 @@ from discord import app_commands
 from config import PREFIX, EMBED_COLOR
 from checks.registered import is_registered
 from checks.voted import is_voter
-from matplotlib.colors import is_color_like
 from utils import get_color
 
 
@@ -89,6 +88,10 @@ class Profile(commands.Cog):
             embed.add_field(name="Interests", value=", ".join(data['interests']), inline=False)
         if not data["aboutme"] == "":
             embed.add_field(name="About me", value=data["aboutme"], inline=False)
+        if not data["song"] is None:
+            embed.add_field(name=f"Listen to my fav song 🎵", value=f"[Listen!]({data['song']})")
+        if not data["gif"] is None:
+            embed.set_image(url=data["gif"])
         embed.set_thumbnail(url=interaction.user.display_avatar.url)
         embed.set_footer(text=f"See how you modify your profile with {PREFIX}help")
 
@@ -243,19 +246,6 @@ class Profile(commands.Cog):
     async def profile_gender(self, interaction: discord.Interaction):
         """SET YOUR PROFILE GENDER"""
         return await interaction.response.send_message(view=SelectView(author=interaction.user, bot=self.bot), ephemeral=True)
-
-    @app_commands.command(name="color", description="Set your profile color")
-    @is_registered()
-    @is_voter()
-    async def profile_color(self, interaction: discord.Interaction, color: str):
-        await interaction.response.defer(ephemeral=True, thinking=True)
-
-        if not is_color_like(color) and not color.startswith("#"):
-            return await interaction.followup.send("please provide a valid color!")
-        r = await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"color": color}})
-        
-        if r:
-            return await interaction.followup.send(embed=discord.Embed(title=f"Profile color set to: {color}"))
 
 async def setup(bot):
     await bot.add_cog(Profile(bot))
