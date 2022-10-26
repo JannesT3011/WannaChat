@@ -112,7 +112,7 @@ class Swipe(commands.Cog):
         """CHECK IF MATCH"""
         partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
         if str(authorid) in partner_data["liked_users"]: # TODO count matches!
-            logger.debug("New Match!")
+            logger.info("New Match!")
             return True
 
         return False
