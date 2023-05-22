@@ -27,7 +27,8 @@ class HelpCategorySelect(discord.ui.Select):
             f"`{PREFIX}interests add <interest>`: Set your interest\n"
             f"`{PREFIX}interests remove`: Remove interest\n"
             f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n"
-            f"`{PREFIX}color`: Set your Profile color",
+            f"`{PREFIX}color`: Set your Profile color\n"
+            f"`{PREFIX}starter`: Get a random conversation starter\n",
             inline=False)
             embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
             
