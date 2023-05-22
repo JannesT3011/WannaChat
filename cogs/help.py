@@ -27,8 +27,7 @@ class HelpCategorySelect(discord.ui.Select):
             f"`{PREFIX}interests add <interest>`: Set your interest\n"
             f"`{PREFIX}interests remove`: Remove interest\n"
             f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n"
-            f"`{PREFIX}color`: Set your Profile color\n"
-            f"`{PREFIX}starter`: Get a random conversation starter\n",
+            f"`{PREFIX}color`: Set your Profile color\n",
             inline=False)
             embed.set_footer(text=f"{self.bot.version} • made with ❤️ by {self.bot.creator}", icon_url=self.bot.user.display_avatar.url)
             
@@ -80,7 +79,8 @@ class Help(commands.Cog):
         f"`{PREFIX}interests view`: View your current interests\n"
         f"`{PREFIX}interests add <interest>`: Set your interest\n"
         f"`{PREFIX}interests remove`: Remove interest\n"
-        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n",
+        f"`{PREFIX}aboutme <aboutme_text>`: Set your AboutMe text\n"
+        f"`{PREFIX}starter`: Get a random conversation starter\n",
         inline=False)
         #embed.add_field(name="Globalchat Commands", value=f"`{PREFIX}globalchat activate`: Enable the GlobalChat\n"
         #f"`{PREFIX}globalchat deactivate`: Deactivate the GlobalChat")
