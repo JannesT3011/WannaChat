@@ -9,6 +9,8 @@ WannaChat discord bot is a tinder like discord bot. Login, create a profile and 
 
 [top.gg]( https://top.gg/bot/979065679376437308 )
 
+> 1000+ registered users
+
 
 ### How to Start:
 

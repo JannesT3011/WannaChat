@@ -112,7 +112,7 @@ class Swipe(commands.Cog):
         """CHECK IF MATCH"""
         partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
         if str(authorid) in partner_data["liked_users"]: # TODO count matches!
-            logger.debug("New Match!")
+            logger.info("New Match!")
             return True
 
         return False
@@ -242,7 +242,11 @@ class Swipe(commands.Cog):
             embed.add_field(name="❌ Write something about yourself:", value=f"`{PREFIX}aboutme`", inline=False)
         if len(embed.fields) == 0:
             return
-        await interaction.user.send(embed=embed)
+        try:
+            await interaction.user.send(embed=embed)
+        except:
+            logger.debug("Cant send message to this user")
+            return
 
 async def setup(bot):
     await bot.add_cog(Swipe(bot))
