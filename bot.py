@@ -22,7 +22,7 @@ COGS = [
     #"cogs.xp_coins",
     "cogs.convstarter",
 
-    "cogs.test",
+    #"cogs.test",
 
     "cogs.support.support",
     "cogs.owner.owner",
