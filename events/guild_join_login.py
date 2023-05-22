@@ -14,7 +14,7 @@ class GuildJoinLogin(commands.Cog):
     async def on_guild_join(self, guild: discord.Guild): 
         channel = guild.system_channel
         embed = discord.Embed(title="Hey, I'm WannaChat! 👋🤖", description=f"Press the button to join the network and find new friends 🧑!\nTo see all commands use `{PREFIX}help`.", color=EMBED_COLOR)
-        embed.add_field(name="🌐GlobalChat", value="You can also use the GlobalChat, select one channel and type `/globalchat activate`")
+        #embed.add_field(name="🌐GlobalChat", value="You can also use the GlobalChat, select one channel and type `/globalchat activate`")
         view = View(timeout=None)
         login_button = Button(label="Start", emoji="💬", style=discord.ButtonStyle.blurple)
 
