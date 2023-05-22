@@ -5,7 +5,7 @@ from config import TOKEN, PREFIX, OWNERID, BLACKLIST_FILE_PATH, TOPGG_TOKEN, EMB
 from database.database import DbClient, Database
 import datetime
 import requests
-from checks import NotVoted, NotRegistered, NotGuild
+from checks import NotVoted, NotRegistered, NotGuild, NotPremium
 from discord.ui import Button, View
 import topgg
 from cogs.profile import SelectView
@@ -20,6 +20,9 @@ COGS = [
     "cogs.swipe",
     #"cogs.globalchat",
     #"cogs.xp_coins",
+    "cogs.convstarter",
+
+    "cogs.test",
 
     "cogs.support.support",
     "cogs.owner.owner",
@@ -30,7 +33,7 @@ COGS = [
 
     "cogs.benefits.likedby",
     "cogs.benefits.reset",
-    #"cogs.benefits.profile_plus"
+    "cogs.benefits.profile_plus"
 ]
 
 class Bot(commands.AutoShardedBot):
@@ -84,10 +87,10 @@ class Bot(commands.AutoShardedBot):
         logger.info("Post Guild Count to Top.gg")
 
     async def on_ready(self):
-        await self.post_guild_count()
+        #await self.post_guild_count()
 
         # Add new field:
-        #await self.db.update_many({}, {"$set": {"gif": None}})
+        #await self.db.update_many({}, {"$set": {"song": None}})
         logger.info("Bot started!")
         print(f"{self.user.id}\n"f"{utils.oauth_url(self.user.id)}\n"f"{self.user.name}\n""Ready!")
 
@@ -151,6 +154,13 @@ class Bot(commands.AutoShardedBot):
 
         elif isinstance(error, NotGuild):
             return await interaction.response.send_message(embed=discord.Embed(title="You can only use this command on a server"), ephemeral=True)
+        
+        elif isinstance(error, NotPremium):
+            premium_button = Button(label="Support me!", url="https://www.patreon.com/")
+            view = View(timeout=None)
+            view.add_item(premium_button)
+
+            return await interaction.response.send_message(embed=discord.Embed(title="👑 Buy premium to use this command", color=EMBED_COLOR), view=view)
 
         elif isinstance(error, discord.app_commands.CheckFailure):
             return await interaction.response.send_message(embed=ErrorEmbed(str(error))) 
