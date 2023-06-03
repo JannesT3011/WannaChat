@@ -1,3 +1,6 @@
+"""
+UPDATE SWIPE TO PREVENT INTERACTION FAILED ERROR
+"""
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -8,7 +11,110 @@ import topgg
 from checks import is_registered
 from utils import get_color, get_logger
 
-logger = get_logger("Swipe")
+
+logger = get_logger("Swipe2.0")
+
+async def add_to_likeduser(bot, authorid, userid) -> None:
+        """ADD SWIPED USER TO LIKED USER DB""" 
+        data = await bot.db.find_one({"_id": str(authorid)})
+        if not str(userid) in data["liked_users"]:
+            await bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
+
+async def add_to_disliked(bot, authorid, userid) -> None:
+    """ADD SWIPED USER TO DISLIKED USER DB"""
+    data = await bot.db.find_one({"_id": str(authorid)})
+    if not str(userid) in data["disliked_users"]:
+        await bot.db.update_many({"_id": str(authorid)}, {"$push": {"disliked_users":str(userid)}})
+
+async def add_to_likedby(bot, likedbyid, userid) -> None:
+    """ADD TO LIKEDBY DB"""
+    data = await bot.db.find_one({"_id": str(userid)})
+    if not str(likedbyid) in data["liked_by"]:
+        await bot.db.update_many({"_id": str(userid)}, {"$push": {"liked_by": str(likedbyid)}})
+
+async def is_match(bot, authorid, partnerid) -> bool:
+    """CHECK IF MATCH"""
+    partner_data = await bot.db.find_one({"_id": str(partnerid)})
+    if str(authorid) in partner_data["liked_users"]: # TODO count matches!
+        logger.info("New Match!")
+        return True
+    return False
+
+class MatchView(discord.ui.View):
+    def __init__(self, match_embed: discord.Embed):
+        super(SwipeView, self).__init__(
+            timeout=120
+        )   
+
+        self.match_embed = match_embed
+
+        info_button = Button(label="Info", style=discord.ButtonStyle.grey, emoji="ℹ️")
+        info_button.callback = self._info
+        self.add_item(info_button)
+    
+    async def _info(self, interaction: discord.Interaction):
+        await interaction.response.send_message(embed=self.match_embed, ephemeral=True)
+
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+        await self.message.edit(view=self)
+        self.stop()
+
+class SwipeView(discord.ui.View):
+    def __init__(self, user):
+        super(SwipeView, self).__init__(
+            timeout=120
+        )
+        self.user = user
+        self.interaction = None
+        self.pressed = True
+
+        like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️")
+        like_button.callback = self._like
+        self.add_item(like_button)
+
+        dislike_button = Button(label="Nahh!", style=discord.ButtonStyle.blurple, emoji="❌") 
+        dislike_button.callback = self._dislike
+        self.add_item(dislike_button)
+        
+        cancel_button = Button(label="Cancel", style=discord.ButtonStyle.grey, emoji="🛑")
+        cancel_button.callback = self._cancel
+        #self.add_item(cancel_button)
+    
+
+    async def _dislike(self, interaction: discord.Interaction):
+        await add_to_disliked(interaction.client, str(interaction.user.id), self.chat_partner_id)
+        self.interaction = interaction
+        self.pressed = True
+        self.stop()
+    
+    async def _like(self, interaction: discord.Interaction):
+        if await is_match(interaction.client, str(interaction.user.id), self.chat_partner_id):
+            matchview = MatchView(self.partner_embed) # TODO geht noch nicht, weil funktin nicht zugreifbar!
+            await interaction.response.send_message(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!\nDon't know how to start? Try: /starter", color=0x67ff90), view=matchview)
+        
+        await add_to_likedby(interaction.client, str(interaction.user.id), self.chat_partner_id)
+        await add_to_likeduser(interaction.client, str(interaction.user.id), self.chat_partner_id)
+        
+        self.interaction = interaction
+        self.pressed = True
+        self.stop()
+    
+
+    async def _cancel(self, interaction: discord.Interaction):
+        for item in self.children:
+            item.disabled = True
+        await self.message.edit(view=self)
+
+        self.interaction = interaction
+        self.stop()
+
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+        await self.message.edit(view=self)
+        self.stop()
 
 class Swipe(commands.Cog):
     def __init__(self, bot):
@@ -17,24 +123,6 @@ class Swipe(commands.Cog):
         self.topgg = topgg.DBLClient(self.bot, TOPGG_TOKEN)
         self.match = ""
         self.match_id = ""
-
-    async def add_to_likeduser(self, authorid, userid) -> None:
-        """ADD SWIPED USER TO LIKED USER DB""" 
-        data = await self.bot.db.find_one({"_id": str(authorid)})
-        if not str(userid) in data["liked_users"]:
-            await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"liked_users":str(userid)}})
-
-    async def add_to_disliked(self, authorid, userid) -> None:
-        """ADD SWIPED USER TO DISLIKED USER DB"""
-        data = await self.bot.db.find_one({"_id": str(authorid)})
-        if not str(userid) in data["disliked_users"]:
-            await self.bot.db.update_many({"_id": str(authorid)}, {"$push": {"disliked_users":str(userid)}})
-
-    async def add_to_likedby(self, likedbyid, userid) -> None:
-        """ADD TO LIKEDBY DB"""
-        data = await self.bot.db.find_one({"_id": str(userid)})
-        if not str(likedbyid) in data["liked_by"]:
-            await self.bot.db.update_many({"_id": str(userid)}, {"$push": {"liked_by": str(likedbyid)}})
 
     async def submit_report(self, authorid, userid):
         return
@@ -64,7 +152,7 @@ class Swipe(commands.Cog):
                 await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
             except:
                 pass
-            return await author.send(f"Oh 😔, No more users! Please try again later!")
+            return await author.send(f"Oh 😔, No more users! Please try again later!") # TODO return None here to stop interaction
 
         chat_partner = random.choice(queue)
         
@@ -74,7 +162,7 @@ class Swipe(commands.Cog):
                     await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
                 except:
                     pass
-                return await author.send(f"Oh 😔, No more users! Please try again later")
+                return await author.send(f"Oh 😔, No more users! Please try again later")  # TODO return None here to stop interaction
             
             if len(likedby_users) >= 1:
                 if random.randint(1,2) == 1:
@@ -94,7 +182,6 @@ class Swipe(commands.Cog):
     async def create_profile_embed(self, chatpartner, chatpartner_id) -> discord.Embed:
         """CREATE THE PROFILE EMBED"""
         chat_partner_data = await self.bot.db.find_one({"_id": str(chatpartner_id)})
-
         embed = discord.Embed(title=f"{chatpartner.name} 🧑", color=await get_color(self.bot.db, chatpartner_id))
         embed.add_field(name="Age", value=chat_partner_data["age"], inline=True)
         embed.add_field(name="Language", value=", ".join(chat_partner_data["language"]), inline=True)
@@ -106,16 +193,6 @@ class Swipe(commands.Cog):
         embed.set_thumbnail(url=chatpartner.display_avatar.url)
 
         return embed
-
-
-    async def is_match(self, authorid, partnerid) -> bool:
-        """CHECK IF MATCH"""
-        partner_data = await self.bot.db.find_one({"_id": str(partnerid)})
-        if str(authorid) in partner_data["liked_users"]: # TODO count matches!
-            logger.info("New Match!")
-            return True
-
-        return False
 
     async def on_swipelimit(self, data) -> bool:
         """CHECK IF USER ON SWIPELIMIT"""
@@ -130,17 +207,20 @@ class Swipe(commands.Cog):
         await topgg_client.close()
         
         return check
-
+    
     @app_commands.command(name="swipe", description="Start swiping and find a random chat partner")
     @app_commands.checks.cooldown(1, 30.0, key=lambda i: (i.guild_id, i.user.id))
     @is_registered()
     async def swipe(self, interaction: discord.Interaction):
         """SWIPE COMMAND"""
-        self.already_swiped = []
-        self.match = ""
-        self.match_id = ""
-        data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
-        
+        return await self.swipe_backend(interaction)
+    
+    async def swipe_backend(self, interaction: discord.Interaction, edit:bool=False):
+        try:
+            data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
+        except:
+            return
+
         if await self.on_swipelimit(data) and not await self.voted(int(interaction.user.id)):
             logger.debug("User on Swipelimit!")
             vote_button = Button(label="Vote vor me", url=f"https://top.gg/bot/{self.bot.user.id}/vote")
@@ -148,105 +228,41 @@ class Swipe(commands.Cog):
             view.add_item(vote_button)
             return await interaction.response.send_message(embed=discord.Embed(title="You reached the like limit!", description="Vote to get infinity likes!", color=EMBED_COLOR), view=view, ephemeral=True)
         
-        self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
-        self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-        
-        while self.chat_partner is None:
+        view = SwipeView(interaction.user.id)
+
+        #if not edit:
+        #    await interaction.response.defer(thinking=True, ephemeral=True)
+
+        try:
             self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
             self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-        
-        embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
-        
-        async def info_button_interaction(interacion: discord.Interaction):
-            embed = await self.create_profile_embed(self.match, self.match_id)
-            await interacion.response.send_message(embed=embed, ephemeral=True)
-        
-        async def like_button_interaction(interaction: discord.Interaction):
-            if await self.is_match(str(interaction.user.id), self.chat_partner_id):
-                self.match = self.chat_partner
-                self.match_id = self.chat_partner_id
-                info_button = Button(label="Info", style=discord.ButtonStyle.grey, emoji="ℹ️")
-                info_button.callback = info_button_interaction
-                view = View()
-                view.add_item(info_button)
-                await interaction.response.send_message(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!\nDon't know how to start? Try: /starter", color=0x67ff90), view=view)
-                try:
-                    await self.chat_partner.send(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{interaction.user.name}#{interaction.user.discriminator}`\n""➡️ Add your match and start chatting!\nDon't know how to start? Try: /starter", color=0x67ff90), view=view)
-                except:
-                    await interaction.response.send_message(embed=discord.Embed(title=f"Oh 😔, Cant contact your match! Please message first! 💬", color=EMBED_COLOR), ephemeral=True)
-            
-            await self.add_to_likedby(str(interaction.user.id), self.chat_partner_id)
-            await self.add_to_likeduser(str(interaction.user.id), self.chat_partner_id)
-            
-            self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
-            self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
+            # TODO check here if user is deleted
+            view.chat_partner_id = self.chat_partner_id
+            view.chat_partner = self.chat_partner
             
             while self.chat_partner is None:
                 self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
                 self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-           
+                view.chat_partner_id = self.chat_partner_id
+                view.chat_partner = self.chat_partner
+
             embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
+            view.partner_embed = embed
 
-            if embed:
-                await interaction.response.edit_message(embed=embed) 
-        
-        async def dislike_button_interaction(interaction: discord.Interaction):
-            await self.add_to_disliked(str(interaction.user.id), self.chat_partner_id)
-            try:
-                self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
-                self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-                
-                while self.chat_partner is None:
-                    self.chat_partner_id = await self.load_chatpartner(interaction.user, interaction)
-                    self.chat_partner = await self.bot.fetch_user(int(self.chat_partner_id))
-                
-                embed = await self.create_profile_embed(self.chat_partner, self.chat_partner_id)
+        except TypeError:
+            await view._cancel(interaction)
 
-                if embed:
-                    await interaction.response.edit_message(embed=embed) 
-
-            except TypeError:
-                like_button.disabled = True
-                dislike_button.disabled = True
-            
-        async def cancel_button_interaction(interaction: discord.Interaction):
-            await interaction.response.edit_message(embed=discord.Embed(title="Click `dismiss message` to end"), view=None)
+        if edit:
+            await interaction.response.edit_message(embed=embed, view=view)
         
-        like_button = Button(label="Like!", style=discord.ButtonStyle.green, emoji="❤️") 
-        dislike_button = Button(label="Nah", style=discord.ButtonStyle.red, emoji="💤") # TODO error handler -> on_timeout -> await interaction.delete_original_message() message
-        cancel_button = Button(label="Cancel", style=discord.ButtonStyle.grey, emoji="❌")
-        like_button.callback = like_button_interaction
-        dislike_button.callback = dislike_button_interaction
-        cancel_button.callback = cancel_button_interaction
-       
-        view = View()
-        #await view.wait()
-        view.add_item(like_button)
-        view.add_item(dislike_button)
-        view.add_item(cancel_button)
+        else:
+            await interaction.response.send_message(embed=embed, view=view) # TODO view.message geht nicht warum auch immer!
+        view.message = await interaction.original_response()
+        await view.wait()
+        interaction = view.interaction
         
-        await interaction.response.defer(ephemeral=True, thinking=True)
-        if embed:
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+        if view.pressed:
+            return await self.swipe_backend(interaction, edit=True)
         
-        author_data = await self.bot.db.find_one({"_id": str(interaction.user.id)})
-        embed = discord.Embed(title="Please complete your profile:", color=EMBED_COLOR)
-        
-        if author_data["gender"] == "-":
-            embed.add_field(name="❌ Add your gender:", value=f"`{PREFIX}gender`", inline=False)
-        if author_data["age"] == "-":
-            embed.add_field(name="❌ Add your age:", value=f"`{PREFIX}age`", inline=False)
-        if len(author_data["interests"]) == 0:
-            embed.add_field(name="❌ Add some interests:", value=f"`{PREFIX}interests add`", inline=False)
-        if author_data["aboutme"] == "":
-            embed.add_field(name="❌ Write something about yourself:", value=f"`{PREFIX}aboutme`", inline=False)
-        if len(embed.fields) == 0:
-            return
-        try:
-            await interaction.user.send(embed=embed)
-        except:
-            logger.debug("Cant send message to this user")
-            return
-
 async def setup(bot):
     await bot.add_cog(Swipe(bot))
