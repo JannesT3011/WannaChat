@@ -63,10 +63,11 @@ class Gif(commands.Cog):
     @is_registered()
     @is_premium()
     async def song_add(self, interaction: discord.Interaction, song:str):
+        print(song)
         await interaction.response.defer(ephemeral=True, thinking=True)
 
         if not song.startswith("https://open.spotify.com"):
-            return interaction.followup.send("Please use a spotify song!", ephemeral=True)
+            return await interaction.followup.send("Please use a spotify song (link needs to start with: https://open.spotify.com)!", ephemeral=True)
         
         await self.bot.db.update_many({"_id": str(interaction.user.id)}, {"$set": {"song": song}})
 

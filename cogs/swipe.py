@@ -256,7 +256,7 @@ class Swipe(commands.Cog):
             await interaction.response.edit_message(embed=embed, view=view)
         
         else:
-            await interaction.response.send_message(embed=embed, view=view) # TODO view.message geht nicht warum auch immer!
+            await interaction.response.send_message(embed=embed, view=view)
         view.message = await interaction.original_response()
         await view.wait()
         interaction = view.interaction
