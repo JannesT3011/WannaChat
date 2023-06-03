@@ -91,7 +91,7 @@ class SwipeView(discord.ui.View):
     
     async def _like(self, interaction: discord.Interaction):
         if await is_match(interaction.client, str(interaction.user.id), self.chat_partner_id):
-            matchview = MatchView(self.partner_embed) # TODO geht noch nicht, weil funktin nicht zugreifbar!
+            #matchview = MatchView(self.partner_embed) # TODO geht noch nicht, weil funktin nicht zugreifbar!
             await interaction.response.send_message(embed=discord.Embed(title="🔥✨🔥 Yeah! New match! 🔥✨🔥", description=f"Match with: `{self.chat_partner.name}#{self.chat_partner.discriminator}`\n""➡️ Add your match and start chatting!\nDon't know how to start? Try: /starter", color=0x67ff90), view=matchview)
         
         await add_to_likedby(interaction.client, str(interaction.user.id), self.chat_partner_id)
