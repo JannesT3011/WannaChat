@@ -47,9 +47,9 @@ class Owner(commands.Cog):
     @app_commands.check(is_owner)
     async def _stats(self, interaction: discord.Interaction):
         """SHOW USERS AND SERVERS IN ONE MESSAGE"""
+        await interaction.response.defer(thinking=True)
         data = await self.bot.queuedb.find_one({"_id": "queue"})
 
-        await interaction.response.defer(thinking=True)
         if data:
             return await interaction.followup.send(embed=discord.Embed(title="Stats", description=f"**Servers:** {len(self.bot.guilds)}\n**Users:** {len(data['queue'])}\n", timestamp=interaction.created_at), ephemeral=True)
     
