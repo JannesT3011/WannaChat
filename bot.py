@@ -47,7 +47,7 @@ class Bot(commands.AutoShardedBot):
             activity=discord.Activity(type=discord.ActivityType.watching, name=f"{PREFIX}help")
         )
         self.launch = __import__("datetime").datetime.utcnow()
-        self.version = "v1.5.11"
+        self.version = "v1.5.12"
         self.creator = "Bambus#8446"
         self.ownerid = OWNERID
         self.test_guild = discord.Object(364335676549890048)
